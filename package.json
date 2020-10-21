@@ -1,0 +1,23 @@
+{
+  "name": "rpg-multi-shotgame",
+  "version": "1.0.0",
+  "description": "Side project to practice Javascript",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PIERREMaximilien/RPG-Multi-shotGame.git"
+  },
+  "author": "Maximilien Pierre, Alexender Spiesberger, Matt Nannetti",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/PIERREMaximilien/RPG-Multi-shotGame/issues"
+  },
+  "homepage": "https://github.com/PIERREMaximilien/RPG-Multi-shotGame#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "nodemon": "^2.0.6"
+  }
+}
