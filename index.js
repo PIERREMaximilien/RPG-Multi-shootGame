@@ -6,64 +6,6 @@ const c = canvas.getContext('2d') // c = context
 canvas.width = innerWidth
 canvas.height = innerHeight
 
-document.addEventListener('keydown', keyDownHandler);
-document.addEventListener('keyup' , keyUpHandler);
-
-let rightPressed = false;
-let leftPressed = false;
-let upPressed = false;
-let downPressed = false;
-
-function keyDownHandler(e){
-    e.preventDefault()
-    if(e.key == 'Right' || e.key == 'ArrowRight'){
-        rightPressed = true
-    } else if (e.key == 'Left' || e.key == 'ArrowLeft') {
-        leftPressed = true
-    } else if (e.key == 'up' || e.key == 'ArrowUp') {
-        upPressed = true
-    } else if (e.key == 'down' || e.key =='ArrowDown') {
-        downPressed = true
-    }
-}
-
-function keyUpHandler(e){
-    e.preventDefault()
-    if(e.key == 'Right' || e.key == 'ArrowRight'){
-        rightPressed = false
-    } else if (e.key == 'Left' || e.key == 'ArrowLeft') {
-        leftPressed = false
-    } else if (e.key == 'up' || e.key == 'ArrowUp') {
-        upPressed = false
-    } else if (e.key == 'down' || e.key =='ArrowDown') {
-        downPressed = false
-    }
-}
-
-function movePlayer(element) {
-    element.draw()
-    if(rightPressed) {
-        element.x += 2
-        if(element.x + element.radius >= canvas.width) {
-            element.x = canvas.width - element.radius
-        }
-    } else if(leftPressed) {
-        element.x -= 2
-        if(element.x - element.radius <= 0) {
-            element.x = 0 + element.radius
-        }
-    } else if(upPressed) {
-        element.y -= 2
-        if(element.y - element.radius <= 0) {
-            element.y = 0 + element.radius
-        }
-    } else if(downPressed) {
-        element.y += 2
-        if(element.y + element.radius >= canvas.height) {
-            element.y = canvas.height - element.radius
-        }
-    }
-}
 
 class Player {
     constructor(x, y, radius, color, health) {
@@ -72,6 +14,10 @@ class Player {
         this.radius = radius
         this.color = color
         this.health = health
+        this.rightPressed = false;
+        this.leftPressed = false;
+        this.upPressed = false;
+        this.downPressed = false;
     }
 
     draw() {
@@ -80,6 +26,31 @@ class Player {
         c.fillStyle = this.color
         c.fill()
         c.closePath()
+    }
+
+    movePlayer() {
+        this.draw()
+        if(this.rightPressed) {
+            this.x += 2
+            if(this.x + this.radius >= canvas.width) {
+                this.x = canvas.width - this.radius
+            }
+        } else if(this.leftPressed) {
+            this.x -= 2
+            if(this.x - this.radius <= 0) {
+                this.x = 0 + this.radius
+            }
+        } else if(this.upPressed) {
+            this.y -= 2
+            if(this.y - this.radius <= 0) {
+                this.y = 0 + this.radius
+            }
+        } else if(this.downPressed) {
+            this.y += 2
+            if(this.y + this.radius >= canvas.height) {
+                this.y = canvas.height - this.radius
+            }
+        }
     }
 }
 
@@ -164,8 +135,7 @@ const enemies = []
 function animate() {
     requestAnimationFrame(animate)
     c.clearRect(0, 0, canvas.width, canvas.height)
-    playerOne.draw()
-    movePlayer(playerOne)
+    playerOne.movePlayer()
     projectiles.forEach((projectile) => {
         projectile.update()
     })
@@ -174,6 +144,27 @@ function animate() {
     })
 }
 
+document.addEventListener('keydown', (event) => {
+    if(event.key === 'q')
+        playerOne.rightPressed = true
+    else if (event.key === 'd')
+        playerOne.leftPressed = true
+    else if (event.key === 'z')
+        playerOne.upPressed = true
+    else if (event.key=== 's')
+        playerOne.downPressed = true
+})
+
+document.addEventListener('keyup', (event) => {
+    if(event.key === 'q')
+        playerOne.rightPressed = false;
+    else if (event.key === 'd')
+        playerOne.leftPressed = false;
+    else if (event.key === 'z')
+        playerOne.upPressed = false;
+    else if (event.key === 's')
+        playerOne.downPressed = false;
+})
 
 addEventListener('click', (event) => {
     const angle = Math.atan2(
@@ -199,25 +190,27 @@ addEventListener('click', (event) => {
 
 setInterval(() => {
 
-    const angle = Math.atan2(
-        playerOne.y - zombie,
-        playerOne.x - zombie
-    )
+    //const angle = Math.atan2(
+    //    playerOne.y - zombie,
+    //    playerOne.x - zombie
+    //)
 
-    const velocity = {
-        x: Math.cos(angle),
-        y: Math.sin(angle)
-    }
+    //const velocity = {
+    //    x: Math.cos(angle),
+    //    y: Math.sin(angle)
+    //}
 
-    const zombie = new Zombie(10, 10, velocity)
+    //const zombie = new Zombie(10, 10, {x: 1,y: 2})
     
     enemies.push(
-        zombie
+        new Zombie(10, 10, {x: 1,y: 2})
     )
 }, 1000);
 
 setInterval(() => {
-        const fastzombie = new FastZombie(40, 40, {x:3,y:3})
+    enemies.push(
+        new FastZombie(40, 40, {x:3,y:3})
+    )
 }, 5000);
 
 setInterval(() => {
