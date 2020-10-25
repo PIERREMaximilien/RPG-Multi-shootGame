@@ -2,4 +2,4 @@
 Side project to practice Javascript
 
 
-https://pierremaximilien.github.io/RPG-Multi-shotGame/. 
+https://pierremaximilien.github.io/RPG-Multi-shootGame/
