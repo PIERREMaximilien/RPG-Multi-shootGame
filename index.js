@@ -35,8 +35,8 @@ class Player {
 
     draw() {
         c.save()
-        let x = 0
-		let y = 0
+        let x = this.x - playerOne.x
+		let y = this.y - playerOne.y
 		
 		x += WIDTH/2
 		y += HEIGHT/2
@@ -63,12 +63,12 @@ class Player {
 
         if(this.x < this.width/2)
 			this.x = this.width/2
-		if(this.x > currentMap.width-this.width/2)
-			this.x = currentMap.width - this.width/2;
+		if(this.x > currentMap.width*2-this.width/2)
+			this.x = currentMap.width*2 - this.width/2;
 		if(this.y < this.height/2)
 			this.y = this.height/2;
-		if(this.y > currentMap.height - this.height/2)
-            this.y = currentMap.height - this.height/2;
+		if(this.y > currentMap.height*2 - this.height/2)
+            this.y = currentMap.height*2 - this.height/2;
             
         this.draw()
     }
@@ -105,9 +105,18 @@ class Bullet {
 
     draw() {
         c.save()
+        let x = this.x - playerOne.x
+		let y = this.y - playerOne.y
+		
+		x += WIDTH/2
+		y += HEIGHT/2
+		
+		x -= this.width/2
+        y -= this.height/2
+        
 		c.drawImage(this.img,
 			0,0,this.img.width,this.img.height,
-			this.x,this.y,this.width,this.height
+			x,y,this.width,this.height
 		)
 		c.restore()
 	}
@@ -116,6 +125,22 @@ class Bullet {
         this.draw()
         this.x = this.x + this.velocity.x
         this.y = this.y + this.velocity.y
+    }
+
+    testCollision(entity2) {	//return if colliding (true/false)
+		let rect1 = {
+			x:this.x-this.width/2,
+			y:this.y-this.height/2,
+			width:this.width,
+			height:this.height,
+		}
+		let rect2 = {
+			x:entity2.x-entity2.width/2,
+			y:entity2.y-entity2.height/2,
+			width:entity2.width,
+			height:entity2.height,
+		}
+		return testCollisionRectRect(rect1,rect2);
     }
 }
 
@@ -133,9 +158,18 @@ class Enemy {
 
     draw() {
         c.save()
+        let x = this.x - playerOne.x
+		let y = this.y - playerOne.y
+		
+		x += WIDTH/2
+		y += HEIGHT/2
+		
+		x -= this.width/2
+        y -= this.height/2
+        
 		c.drawImage(this.img,
 			0,0,this.img.width,this.img.height,
-			this.x,this.y,this.width,this.height
+			x,y,this.width,this.height
 		)
 		c.restore()
 	}
@@ -160,8 +194,8 @@ class Enemy {
 
 randomlyGenerateEnemy = function(width, height, speed, hp, image){
 	//Math.random() returns a number between 0 and 1
-	let x = Math.random()*currentMap.width
-	let y = Math.random()*currentMap.height
+	let x = Math.random()*currentMap.width*2
+	let y = Math.random()*currentMap.height*2
     let id = Math.random()
     
     const enemy = new Enemy(id, x, y, width, height, speed, hp, image)
@@ -182,7 +216,7 @@ class Maps {
 	draw() {
 		let x = WIDTH/2 - playerOne.x;
 		let y = HEIGHT/2 - playerOne.y;
-        c.drawImage(this.image,0,0,this.image.width,this.image.height,x,y,this.image.width,this.image.height);
+        c.drawImage(this.image,0,0,this.image.width,this.image.height,x,y,this.image.width*2,this.image.height*2);
 	}
 }
 
@@ -196,7 +230,24 @@ function animate() {
     currentMap.draw()
     playerOne.movePlayer()
 	for(const key in bulletList){
-		bulletList[key].update()
+        let b  = bulletList[key]
+        let remove = false
+
+        b.update()
+        b.timer++
+
+        if(b.timer > 100)
+            remove = true
+
+        for(const key2 in enemyList) {
+            if(b.testCollision(enemyList[key2])){
+                remove = true;
+                delete enemyList[key2];
+            }				
+        }
+
+        if(remove)
+            delete bulletList[key]
         
     }
 
@@ -229,8 +280,8 @@ addEventListener('keyup', (event) => {
 })
 
 addEventListener('click', (event) => {
-    const diffX = event.clientX - playerOne.x
-    const diffY = event.clientY - playerOne.x
+    const diffX = event.clientX - WIDTH/2
+    const diffY = event.clientY - HEIGHT/2
 
     console.log(diffY)
     console.log(diffX)
