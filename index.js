@@ -3,6 +3,8 @@ const c = document.querySelector('canvas').getContext('2d')
 const WIDTH = 750
 const HEIGHT = 750
 
+let time = 0
+
 const Img = {};
 Img.player = new Image();
 Img.player.src = "img/player.png";
@@ -10,6 +12,7 @@ Img.enemy = new Image();
 Img.enemy.src = 'img/enemy.png';
 Img.bullet = new Image();
 Img.bullet.src = 'img/bullet.png';
+
 
 function testCollisionRectRect(rect1,rect2) {
 	return rect1.x <= rect2.x + rect2.width 
@@ -19,7 +22,7 @@ function testCollisionRectRect(rect1,rect2) {
 }
 
 class Player {
-    constructor(x, y, width, height, speed, hp, img) {
+    constructor(x, y, width, height, speed, hp, img, weapon) {
         this.x = x
         this.y = y
         this.width = width
@@ -27,10 +30,14 @@ class Player {
         this.speed = speed
         this.hp = hp
         this.img = img
-        this.rightPressed = false;
-        this.leftPressed = false;
-        this.upPressed = false;
-        this.downPressed = false;
+        this.weapon = weapon
+        this.atkCounter = 0
+        this.aimAngle = 0
+        this.mouseLeft = false
+        this.rightPressed = false
+        this.leftPressed = false
+        this.upPressed = false
+        this.downPressed = false
     }
 
     draw() {
@@ -51,7 +58,7 @@ class Player {
 		c.restore()
 	}
 
-    movePlayer() {
+    updatePosition() {
         if(this.rightPressed)
             this.x += this.speed   
         else if(this.leftPressed)
@@ -69,8 +76,6 @@ class Player {
 			this.y = this.height/2;
 		if(this.y > currentMap.height*2 - this.height/2)
             this.y = currentMap.height*2 - this.height/2;
-            
-        this.draw()
     }
 
     testCollision(entity2) {	//return if colliding (true/false)
@@ -87,7 +92,23 @@ class Player {
 			height:entity2.height,
 		}
 		return testCollisionRectRect(rect1,rect2);
-    } 
+    }
+
+    attack() {
+        if(this.mouseLeft) {
+            if(this.atkCounter > 30) {
+                generateBullet()
+                playerOne.atkCounter = 0
+            }
+        }
+    }
+    
+    update(){
+        this.updatePosition()
+        this.attack()
+        this.atkCounter += this.weapon.atkspeed
+        this.draw()
+    }
 }
 
 class Bullet {
@@ -121,8 +142,7 @@ class Bullet {
 		c.restore()
 	}
 
-    update() {
-        this.draw()
+    updatePosition() {
         this.x = this.x + this.velocity.x
         this.y = this.y + this.velocity.y
     }
@@ -141,6 +161,11 @@ class Bullet {
 			height:entity2.height,
 		}
 		return testCollisionRectRect(rect1,rect2);
+    }
+
+    update() {
+        this.updatePosition()
+        this.draw()
     }
 }
 
@@ -174,7 +199,7 @@ class Enemy {
 		c.restore()
 	}
 
-    moveEnemies() {
+    updatePosition() {
         let diffX = this.x - playerOne.x
         let diffY = this.y - playerOne.y
 
@@ -187,10 +212,27 @@ class Enemy {
             this.y += this.speed
         else 
             this.y -= this.speed
+    }
 
+    update() {
+        this.updatePosition()
         this.draw()
     }
 }
+
+
+class Weapon {
+    constructor(atkspeed,damage) {
+        this.atkspeed = atkspeed
+        this.damage = damage
+    }
+    
+}
+
+const gun = new Weapon(1, 25)
+const uzi = new Weapon(2, 20)
+const ak47 = new Weapon(3, 40)
+
 
 randomlyGenerateEnemy = function(width, height, speed, hp, image){
 	//Math.random() returns a number between 0 and 1
@@ -202,7 +244,21 @@ randomlyGenerateEnemy = function(width, height, speed, hp, image){
     enemyList[id] = enemy
 }
 
-const playerOne = new Player(WIDTH/2, HEIGHT/2, 50, 50, 3, 100, Img.player)
+generateBullet = function() {
+    let angle = playerOne.aimAngle
+
+    const velocity = {
+        x: Math.cos(angle/180*Math.PI) * 10,
+        y: Math.sin(angle/180*Math.PI) * 10
+    }
+
+    const id = Math.random()
+    
+    const bullet = new Bullet(id, playerOne.x, playerOne.y, 6, 6, velocity, playerOne.weapon.damage, Img.bullet)
+    bulletList[id] = bullet
+}
+
+const playerOne = new Player(WIDTH/2, HEIGHT/2, 50, 50, 3, 100, Img.player, gun)
 
 class Maps {
     constructor(id,imgSrc,width,height){
@@ -228,8 +284,9 @@ const enemyList = {}
 function animate() {
     c.clearRect(0, 0, WIDTH, HEIGHT)
     currentMap.draw()
-    playerOne.movePlayer()
-	for(const key in bulletList){
+    playerOne.update()
+    time++
+	for(let key in bulletList){
         let b  = bulletList[key]
         let remove = false
 
@@ -239,21 +296,32 @@ function animate() {
         if(b.timer > 100)
             remove = true
 
-        for(const key2 in enemyList) {
+        for(let key2 in enemyList) {
             if(b.testCollision(enemyList[key2])){
-                remove = true;
-                delete enemyList[key2];
+                remove = true
+                enemyList[key2].hp -= b.dmg
             }				
         }
 
         if(remove)
             delete bulletList[key]
-        
     }
 
-	for(const key in enemyList){
-		enemyList[key].moveEnemies()
-	}
+	for(let key in enemyList){
+        enemyList[key].update()
+        if(enemyList[key].hp <= 0)
+            delete enemyList[key]
+    }
+
+    if(time % 200 === 0) 
+        randomlyGenerateEnemy(30,30,2,50,Img.enemy)
+
+    if(time % 500 === 0)
+        randomlyGenerateEnemy(60,60,1,100,Img.enemy)
+
+    if(time % 1000 === 0)
+        randomlyGenerateEnemy(300,300,0.5,500,Img.enemy)
+
     requestAnimationFrame(animate)
 }
 
@@ -279,41 +347,24 @@ addEventListener('keyup', (event) => {
         playerOne.downPressed = false;
 })
 
-addEventListener('click', (event) => {
-    const diffX = event.clientX - WIDTH/2
-    const diffY = event.clientY - HEIGHT/2
-
-    console.log(diffY)
-    console.log(diffX)
+addEventListener('mousemove', (event) => {
+    let mouseX = event.clientX - document.querySelector('canvas').getBoundingClientRect().left
+	let mouseY = event.clientY - document.querySelector('canvas').getBoundingClientRect().top
+	
+	mouseX -= WIDTH/2
+    mouseY -= HEIGHT/2
     
-    console.log (playerOne.x)
-    console.log (playerOne.y)
-
-    const angle = Math.atan2(diffY,diffX) / Math.PI * 180
-
-    console.log(angle)
-
-    const velocity = {
-        x: Math.cos(angle/180*Math.PI) * 6,
-        y: Math.sin(angle/180*Math.PI) * 6
-    }
-
-    const id = Math.random()
-    
-    const bullet = new Bullet(id, playerOne.x, playerOne.y, 6, 6, velocity, 1, Img.bullet)
-    bulletList[id] = bullet
+    playerOne.aimAngle = Math.atan2(mouseY,mouseX) / Math.PI * 180
 })
 
-setInterval(() => {    
-    randomlyGenerateEnemy(30,30,2,1,Img.enemy)
-}, 10000);
+addEventListener('mousedown', (event) => {
+    if(event.button === 0)
+        playerOne.mouseLeft = true
+})
 
-setInterval(() => {
-    randomlyGenerateEnemy(60,60,1,2,Img.enemy)
-}, 5000);
-
-setInterval(() => {
-    randomlyGenerateEnemy(300,300,0.5,4,Img.enemy)
-}, 15000);
+addEventListener('mouseup', (event) => {
+    if(event.button === 0)
+        playerOne.mouseLeft = false
+})
 
 animate()
