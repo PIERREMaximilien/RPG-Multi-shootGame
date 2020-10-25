@@ -1,10 +1,9 @@
-const canvas = document.querySelector('canvas')
-const c = canvas.getContext('2d') // c = context 
+const c = document.querySelector('canvas').getContext('2d')
 
-canvas.width = innerWidth
-canvas.height = innerHeight
+const WIDTH = 500
+const HEIGHT = 500
 
-let Img = {};
+const Img = {};
 Img.player = new Image();
 Img.player.src = "img/player.png";
 Img.enemy = new Image();
@@ -12,12 +11,20 @@ Img.enemy.src = 'img/enemy.png';
 Img.bullet = new Image();
 Img.bullet.src = 'img/bullet.png';
 
+function testCollisionRectRect(rect1,rect2) {
+	return rect1.x <= rect2.x + rect2.width 
+		&& rect2.x <= rect1.x + rect1.width
+		&& rect1.y <= rect2.y + rect2.height
+		&& rect2.y <= rect1.y + rect1.height
+}
+
 class Player {
-    constructor(x, y, width, height, hp, img) {
+    constructor(x, y, width, height, speed, hp, img) {
         this.x = x
         this.y = y
         this.width = width
         this.height = height
+        this.speed = speed
         this.hp = hp
         this.img = img
         this.rightPressed = false;
@@ -28,48 +35,72 @@ class Player {
 
     draw() {
         c.save()
+        let x = 0
+		let y = 0
+		
+		x += WIDTH/2
+		y += HEIGHT/2
+		
+		x -= this.width/2
+        y -= this.height/2
+        
 		c.drawImage(this.img,
 			0,0,this.img.width,this.img.height,
-			this.x,this.y,this.width,this.height
+			x,y,this.width,this.height
 		)
 		c.restore()
 	}
 
     movePlayer() {
+        if(this.rightPressed)
+            this.x += this.speed   
+        else if(this.leftPressed)
+            this.x -= this.speed
+        if(this.upPressed)
+            this.y -= this.speed
+        else if(this.downPressed)
+            this.y += this.speed
+
+        if(this.x < this.width/2)
+			this.x = this.width/2
+		if(this.x > currentMap.width-this.width/2)
+			this.x = currentMap.width - this.width/2;
+		if(this.y < this.height/2)
+			this.y = this.height/2;
+		if(this.y > currentMap.height - this.height/2)
+            this.y = currentMap.height - this.height/2;
+            
         this.draw()
-        if(this.rightPressed) {
-            this.x += 2
-            if(this.x + this.width >= canvas.width) {
-                this.x = canvas.width - this.width
-            }
-        } else if(this.leftPressed) {
-            this.x -= 2
-            if(this.x <= 0) {
-                this.x = 0
-            }
-        } else if(this.upPressed) {
-            this.y -= 2
-            if(this.y <= 0) {
-                this.y = 0
-            }
-        } else if(this.downPressed) {
-            this.y += 2
-            if(this.y + this.height >= canvas.height) {
-                this.y = canvas.height - this.height
-            }
-        }
     }
+
+    testCollision(entity2) {	//return if colliding (true/false)
+		let rect1 = {
+			x:this.x-this.width/2,
+			y:this.y-this.height/2,
+			width:this.width,
+			height:this.height,
+		}
+		let rect2 = {
+			x:entity2.x-entity2.width/2,
+			y:entity2.y-entity2.height/2,
+			width:entity2.width,
+			height:entity2.height,
+		}
+		return testCollisionRectRect(rect1,rect2);
+    } 
 }
 
-class Projectile {
-    constructor(x, y, width, height, velocity, img) {
+class Bullet {
+    constructor(id, x, y, width, height, velocity, dmg, img) {
+        this.id = id
         this.x = x
         this.y = y
         this.width = width
         this.height = height
         this.velocity = velocity
+        this.dmg = dmg
         this.img = img
-
+        this.timer = 0
     }
 
     draw() {
@@ -89,10 +120,14 @@ class Projectile {
 }
 
 class Enemy {
-    constructor(x, y, velocity, img) {
+    constructor(id, x, y, width, height, speed, hp, img) {
+        this.id = id
         this.x = x
-        this.y = y 
-        this.velocity = velocity
+        this.y = y
+        this.width = width
+        this.height = height
+        this.speed = speed
+        this.hp = hp
         this.img = img
     }
 
@@ -106,54 +141,69 @@ class Enemy {
 	}
 
     moveEnemies() {
+        let diffX = this.x - playerOne.x
+        let diffY = this.y - playerOne.y
+
+        if(diffX < 0)
+            this.x += this.speed
+        else
+            this.x -= this.speed
+        
+        if(diffY < 0)
+            this.y += this.speed
+        else 
+            this.y -= this.speed
+
         this.draw()
-        this.x = this.x + this.velocity.x 
-        this.y = this.y + this.velocity.y
     }
 }
 
-class BigZombie extends Enemy {
-    constructor(x, y, velocity, img) {
-        super(x, y, velocity,img)
-        this.width = 100
-        this.height = 100
-        this.hp = 300
-    }
+randomlyGenerateEnemy = function(width, height, speed, hp, image){
+	//Math.random() returns a number between 0 and 1
+	let x = Math.random()*currentMap.width
+	let y = Math.random()*currentMap.height
+    let id = Math.random()
+    
+    const enemy = new Enemy(id, x, y, width, height, speed, hp, image)
+    enemyList[id] = enemy
 }
 
-class Zombie extends Enemy {
-    constructor(x, y, velocity, img) {
-        super(x, y, velocity, img)
-        this.width = 50
-        this.height = 50
-        this.hp = 100
-    }
+const playerOne = new Player(WIDTH/2, HEIGHT/2, 50, 50, 3, 100, Img.player)
+
+class Maps {
+    constructor(id,imgSrc,width,height){
+		this.id = id,
+		this.image = new Image(),
+		this.width = width,
+        this.height	= height
+        this.image.src = imgSrc;
+	}
+	
+	draw() {
+		let x = WIDTH/2 - playerOne.x;
+		let y = HEIGHT/2 - playerOne.y;
+        c.drawImage(this.image,0,0,this.image.width,this.image.height,x,y,this.image.width,this.image.height);
+	}
 }
 
-class FastZombie extends Enemy {
-    constructor(x, y, velocity, img) {
-        super(x, y, velocity, img)
-        this.width = 30
-        this.height = 30
-        this.hp= 50
-    }
-}
 
-const playerOne = new Player(canvas.width / 2, canvas.height / 2, 40, 40, 100, Img.player)
-
-const projectiles = []
-const enemies = []
+currentMap = new Maps('field','img/map.png',1204,1204)
+const bulletList = {}
+const enemyList = {}
 
 function animate() {
-    requestAnimationFrame(animate)
-    c.clearRect(0, 0, canvas.width, canvas.height)
+    c.clearRect(0, 0, WIDTH, HEIGHT)
+    currentMap.draw()
     playerOne.movePlayer()
-    projectiles.forEach((projectile) => {
-        projectile.update()
-    })
-    enemies.forEach((enemy) => {
-        enemy.moveEnemies()
-    })
+	for(const key in bulletList){
+		bulletList[key].update()
+        
+    }
+
+	for(const key in enemyList){
+		enemyList[key].moveEnemies()
+	}
+    requestAnimationFrame(animate)
 }
 
 addEventListener('keydown', (event) => {
@@ -179,57 +229,40 @@ addEventListener('keyup', (event) => {
 })
 
 addEventListener('click', (event) => {
-    const angle = Math.atan2(
-        event.clientY - playerOne.y,
-        event.clientX - playerOne.x
-    )
+    const diffX = event.clientX - playerOne.x
+    const diffY = event.clientY - playerOne.x
+
+    console.log(diffY)
+    console.log(diffX)
+    
+    console.log (playerOne.x)
+    console.log (playerOne.y)
+
+    const angle = Math.atan2(diffY,diffX) / Math.PI * 180
+
+    console.log(angle)
 
     const velocity = {
-        x: Math.cos(angle) * 6,
-        y: Math.sin(angle) * 6
+        x: Math.cos(angle/180*Math.PI) * 6,
+        y: Math.sin(angle/180*Math.PI) * 6
     }
 
-    projectiles.push(
-        new Projectile(
-            playerOne.x, 
-            playerOne.y, 
-            5, 
-            5, 
-            velocity,
-            Img.bullet
-        )
-    )
+    const id = Math.random()
+    
+    const bullet = new Bullet(id, playerOne.x, playerOne.y, 6, 6, velocity, 1, Img.bullet)
+    bulletList[id] = bullet
 })
 
-setInterval(() => {
-
-    //const angle = Math.atan2(
-    //    playerOne.y - zombie,
-    //    playerOne.x - zombie
-    //)
-
-    //const velocity = {
-    //    x: Math.cos(angle),
-    //    y: Math.sin(angle)
-    //}
-
-    //const zombie = new Zombie(10, 10, {x: 1,y: 2})
-    
-    enemies.push(
-        new Zombie(10, 10, {x: 1,y: 2}, Img.enemy)
-    )
-}, 1000);
+setInterval(() => {    
+    randomlyGenerateEnemy(30,30,2,1,Img.enemy)
+}, 10000);
 
 setInterval(() => {
-    enemies.push(
-        new FastZombie(40, 40, {x:3,y:3}, Img.enemy)
-    )
+    randomlyGenerateEnemy(60,60,1,2,Img.enemy)
 }, 5000);
 
 setInterval(() => {
-    enemies.push(
-        new BigZombie(300, 300, {x:0.3,y:0.3}, Img.enemy)
-    )
+    randomlyGenerateEnemy(300,300,0.5,4,Img.enemy)
 }, 15000);
 
 animate()
