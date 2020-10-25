@@ -1,7 +1,7 @@
 const c = document.querySelector('canvas').getContext('2d')
 
-const WIDTH = 500
-const HEIGHT = 500
+const WIDTH = 750
+const HEIGHT = 750
 
 const Img = {};
 Img.player = new Image();
