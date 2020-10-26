@@ -2,7 +2,7 @@ const c = document.querySelector('canvas').getContext('2d')
 
 const WIDTH = 750
 const HEIGHT = 750
-
+c.font = '30px Arial'
 c.mozImageSmoothingEnabled = false;	//better graphics for pixel art
 c.msImageSmoothingEnabled = false;
 c.imageSmoothingEnabled = false;
@@ -107,6 +107,8 @@ class Player {
                     generateBullet(playerOne.aimAngle)
                     generateBullet(playerOne.aimAngle + 5)
                     generateBullet(playerOne.aimAngle - 5)
+                    generateBullet(playerOne.aimAngle + 10)
+                    generateBullet(playerOne.aimAngle - 10)
                 } else if(this.weapon.special === 2) {
                     generateBullet(playerOne.aimAngle + Math.floor(Math.random()*20))
                     generateBullet(playerOne.aimAngle + Math.floor(Math.random()*(-20)))
@@ -183,7 +185,7 @@ class Bullet {
 }
 
 class Enemy {
-    constructor(id, x, y, width, height, speed, hp, hpMax, img) {
+    constructor(id, x, y, width, height, speed, hp, hpMax, img, point) {
         this.id = id
         this.x = x
         this.y = y
@@ -193,6 +195,7 @@ class Enemy {
         this.hp = hp
         this.hpMax = hpMax
         this.img = img
+        this.point = point
     }
 
     draw() {
@@ -260,19 +263,19 @@ class Weapon {
 
 const gun = new Weapon(1,25,0,25)
 const desertEagle = new Weapon(1,40,0,40)
-const shotgun = new Weapon(1,30,1,25)
+const shotgun = new Weapon(0.5,15,1,25)
 const uzi = new Weapon(4,20,0,40)
 const ak47 = new Weapon(3,30,0,50)
 const machinegun = new Weapon(3,15,2,50)
 
 
-randomlyGenerateEnemy = function(width, height, speed, hp, hpMax, image){
+randomlyGenerateEnemy = function(width, height, speed, hp, hpMax, image, point){
 	//Math.random() returns a number between 0 and 1
 	let x = Math.random()*currentMap.width*2
 	let y = Math.random()*currentMap.height*2
     let id = Math.random()
     
-    let enemy = new Enemy(id, x, y, width, height, speed, hp, hpMax, image)
+    let enemy = new Enemy(id, x, y, width, height, speed, hp, hpMax, image, point)
     enemyList[id] = enemy
 }
 
@@ -317,12 +320,14 @@ class Maps {
 currentMap = new Maps('field','img/map.png',1204,1204)
 const bulletList = {}
 const enemyList = {}
+let score = 0
 
 function animate() {
     c.clearRect(0, 0, WIDTH, HEIGHT)
     currentMap.draw()
     playerOne.update()
     time++
+    c.fillText('Score: ' + score,200,30)
 	for(let key in bulletList){
         let b  = bulletList[key]
         let remove = false
@@ -346,18 +351,20 @@ function animate() {
 
 	for(let key in enemyList){
         enemyList[key].update()
-        if(enemyList[key].hp <= 0)
+        if(enemyList[key].hp <= 0) {
+            score += enemyList[key].point
             delete enemyList[key]
+        }
     }
 
     if(time % 200 === 0) 
-        randomlyGenerateEnemy(30,30,2,50,50,Img.enemy)
+        randomlyGenerateEnemy(30,30,2,50,50,Img.enemy,20)
 
     if(time % 500 === 0)
-        randomlyGenerateEnemy(60,60,1,100,100,Img.enemy)
+        randomlyGenerateEnemy(60,60,1,100,100,Img.enemy,50)
 
     if(time % 1000 === 0)
-        randomlyGenerateEnemy(300,300,0.5,500,500,Img.enemy)
+        randomlyGenerateEnemy(300,300,0.5,500,500,Img.enemy,100)
 
     requestAnimationFrame(animate)
 }
