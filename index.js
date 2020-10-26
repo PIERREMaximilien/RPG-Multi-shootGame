@@ -3,6 +3,10 @@ const c = document.querySelector('canvas').getContext('2d')
 const WIDTH = 750
 const HEIGHT = 750
 
+c.mozImageSmoothingEnabled = false;	//better graphics for pixel art
+c.msImageSmoothingEnabled = false;
+c.imageSmoothingEnabled = false;
+
 let time = 0
 
 const Img = {};
@@ -97,7 +101,16 @@ class Player {
     attack() {
         if(this.mouseLeft) {
             if(this.atkCounter > 30) {
-                generateBullet()
+                if(this.weapon.special === 0)
+                    generateBullet()
+                else if(this.weapon.special === 1) {
+                    generateBullet(playerOne.aimAngle)
+                    generateBullet(playerOne.aimAngle + 5)
+                    generateBullet(playerOne.aimAngle - 5)
+                } else if(this.weapon.special === 2) {
+                    generateBullet(playerOne.aimAngle + Math.floor(Math.random()*20))
+                    generateBullet(playerOne.aimAngle + Math.floor(Math.random()*(-20)))
+                }
                 playerOne.atkCounter = 0
             }
         }
@@ -236,16 +249,21 @@ class Enemy {
 
 
 class Weapon {
-    constructor(atkspeed,damage) {
+    constructor(atkspeed,damage,special,range) {
         this.atkspeed = atkspeed
         this.damage = damage
+        this.special = special
+        this.range = range
     }
     
 }
 
-const gun = new Weapon(1, 25)
-const uzi = new Weapon(2, 20)
-const ak47 = new Weapon(3, 40)
+const gun = new Weapon(1,25,0,25)
+const desertEagle = new Weapon(1,40,0,40)
+const shotgun = new Weapon(1,30,1,25)
+const uzi = new Weapon(4,20,0,40)
+const ak47 = new Weapon(3,30,0,50)
+const machinegun = new Weapon(3,15,2,50)
 
 
 randomlyGenerateEnemy = function(width, height, speed, hp, hpMax, image){
@@ -258,8 +276,11 @@ randomlyGenerateEnemy = function(width, height, speed, hp, hpMax, image){
     enemyList[id] = enemy
 }
 
-generateBullet = function() {
-    let angle = playerOne.aimAngle
+generateBullet = function(aimOverwrite) {
+    let angle
+	if(aimOverwrite !== undefined)
+		angle = aimOverwrite;
+	else angle = playerOne.aimAngle;
 
     const velocity = {
         x: Math.cos(angle/180*Math.PI) * 10,
@@ -272,7 +293,9 @@ generateBullet = function() {
     bulletList[id] = bullet
 }
 
-const playerOne = new Player(WIDTH/2, HEIGHT/2, 50, 50, 3, 100, Img.player, ak47)
+
+
+const playerOne = new Player(WIDTH/2, HEIGHT/2, 50, 50, 3, 100, Img.player, machinegun)
 
 class Maps {
     constructor(id,imgSrc,width,height){
@@ -307,7 +330,7 @@ function animate() {
         b.update()
         b.timer++
 
-        if(b.timer > 100)
+        if(b.timer > playerOne.weapon.range)
             remove = true
 
         for(let key2 in enemyList) {
