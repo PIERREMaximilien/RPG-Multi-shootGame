@@ -170,7 +170,7 @@ class Bullet {
 }
 
 class Enemy {
-    constructor(id, x, y, width, height, speed, hp, img) {
+    constructor(id, x, y, width, height, speed, hp, hpMax, img) {
         this.id = id
         this.x = x
         this.y = y
@@ -178,6 +178,7 @@ class Enemy {
         this.height = height
         this.speed = speed
         this.hp = hp
+        this.hpMax = hpMax
         this.img = img
     }
 
@@ -191,6 +192,19 @@ class Enemy {
 		
 		x -= this.width/2
         y -= this.height/2
+
+        let x1 = this.x - playerOne.x + WIDTH/2;
+		let y1 = this.y - playerOne.y + HEIGHT/2 - this.height/2 - 20;
+		
+		c.save();
+		c.fillStyle = 'red';
+		var width = 100*this.hp/this.hpMax;
+		if(width < 0)
+			width = 0;
+		c.fillRect(x1-50,y1,width,10);
+		
+		c.strokeStyle = 'black';
+		c.strokeRect(x1-50,y1,100,10);
         
 		c.drawImage(this.img,
 			0,0,this.img.width,this.img.height,
@@ -234,13 +248,13 @@ const uzi = new Weapon(2, 20)
 const ak47 = new Weapon(3, 40)
 
 
-randomlyGenerateEnemy = function(width, height, speed, hp, image){
+randomlyGenerateEnemy = function(width, height, speed, hp, hpMax, image){
 	//Math.random() returns a number between 0 and 1
 	let x = Math.random()*currentMap.width*2
 	let y = Math.random()*currentMap.height*2
     let id = Math.random()
     
-    const enemy = new Enemy(id, x, y, width, height, speed, hp, image)
+    let enemy = new Enemy(id, x, y, width, height, speed, hp, hpMax, image)
     enemyList[id] = enemy
 }
 
@@ -254,11 +268,11 @@ generateBullet = function() {
 
     const id = Math.random()
     
-    const bullet = new Bullet(id, playerOne.x, playerOne.y, 6, 6, velocity, playerOne.weapon.damage, Img.bullet)
+    const bullet = new Bullet(id, playerOne.x, playerOne.y, 10, 10, velocity, playerOne.weapon.damage, Img.bullet)
     bulletList[id] = bullet
 }
 
-const playerOne = new Player(WIDTH/2, HEIGHT/2, 50, 50, 3, 100, Img.player, gun)
+const playerOne = new Player(WIDTH/2, HEIGHT/2, 50, 50, 3, 100, Img.player, ak47)
 
 class Maps {
     constructor(id,imgSrc,width,height){
@@ -314,13 +328,13 @@ function animate() {
     }
 
     if(time % 200 === 0) 
-        randomlyGenerateEnemy(30,30,2,50,Img.enemy)
+        randomlyGenerateEnemy(30,30,2,50,50,Img.enemy)
 
     if(time % 500 === 0)
-        randomlyGenerateEnemy(60,60,1,100,Img.enemy)
+        randomlyGenerateEnemy(60,60,1,100,100,Img.enemy)
 
     if(time % 1000 === 0)
-        randomlyGenerateEnemy(300,300,0.5,500,Img.enemy)
+        randomlyGenerateEnemy(300,300,0.5,500,500,Img.enemy)
 
     requestAnimationFrame(animate)
 }
