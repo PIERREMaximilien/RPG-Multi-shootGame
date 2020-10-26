@@ -295,7 +295,7 @@ generateBullet = function(aimOverwrite) {
 
 
 
-const playerOne = new Player(WIDTH/2, HEIGHT/2, 50, 50, 3, 100, Img.player, machinegun)
+const playerOne = new Player(WIDTH/2, HEIGHT/2, 50, 50, 3, 100, Img.player, shotgun)
 
 class Maps {
     constructor(id,imgSrc,width,height){
