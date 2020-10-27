@@ -113,8 +113,10 @@ class Player {
                     Bullet.generate(playerOne.aimAngle + 10)
                     Bullet.generate(playerOne.aimAngle - 10)
                 } else if(this.weapon.special === 2) {
-                    Bullet.generate(playerOne.aimAngle + Math.floor(Math.random()*20))
-                    Bullet.generate(playerOne.aimAngle + Math.floor(Math.random()*(-20)))
+                    if(Math.random()< 0.5)
+                        Bullet.generate(playerOne.aimAngle + Math.floor(Math.random()*20))
+                    else
+                        Bullet.generate(playerOne.aimAngle + Math.floor(Math.random()*(-20)))
                 }
                 playerOne.atkCounter = 0
             }
@@ -294,7 +296,7 @@ const desertEagle = new Weapon(1,40,0,35)
 const shotgun = new Weapon(0.5,15,1,25)
 const uzi = new Weapon(4,20,0,35)
 const ak47 = new Weapon(3,30,0,35)
-const machinegun = new Weapon(3,15,2,40)
+const machinegun = new Weapon(6,15,2,40)
 const playerOne = new Player(WIDTH/2, HEIGHT/2, 50, 50, 3, 100, Img.player, machinegun)
 
 class Maps {
