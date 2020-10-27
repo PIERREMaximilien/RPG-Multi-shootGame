@@ -18,8 +18,16 @@ Img.enemy = new Image()
 Img.enemy.src = 'img/enemy.png'
 Img.bullet = new Image()
 Img.bullet.src = 'img/bullet.png'
-Img.colt45 = new Image()
-Img.colt45.src = 'img/weapon/shootgun.png'
+Img.desertEagle = new Image()
+Img.desertEagle.src = 'img/weapon/desertEagle.png'
+Img.shootgun = new Image()
+Img.shootgun.src = 'img/weapon/shootgun.png'
+Img.ak47 = new Image()
+Img.ak47.src = 'img/weapon/ak47.png'
+Img.machinegun = new Image()
+Img.machinegun.src = 'img/weapon/machinegun.png'
+Img.usi = new Image()
+Img.usi.src = 'img/weapon/usi.png'
 
 
 console.log(Img)
@@ -40,10 +48,10 @@ class Weapon {
     }
 }
 
-const colt45 = new Weapon(1,25,0,25)
-const desertEagle = new Weapon(1,40,0,35)
-const shotgun = new Weapon(0.5,15,1,25)
-const tompson = new Weapon(4,20,0,35)
+const gun = new Weapon(1,25,0,25)
+const desertEagle = new Weapon(1,50,0,25)
+const shootgun = new Weapon(0.5,15,1,25)
+const usi = new Weapon(4,20,0,35)
 const ak47 = new Weapon(3,30,0,35)
 const machinegun = new Weapon(6,15,2,40)
 
@@ -215,27 +223,26 @@ class Enemy {
         this.draw()
     }
 
-    generateLoot() {
-        //Math.random() returns a number between 0 and 1
+    loot(wp,img,lootchance) {
+        
         let x = this.x
         let y = this.y
-        let height = 32
-        let width = 32
-        let id = Math.random()
+        let height = 50
+        let width = 50
+        let id = Math.random() 
 
-
-        if(Math.random()<0.1){
-            let category = new Weapon(1,25,0,25)
-            let img = Img.colt45
-            const colt45 = new Bonus(id,x,y,width,height,category,img)
-            Bonus.list[id] = colt45
+        if(Math.random()<lootchance){
+            let weapon = new Bonus(id,x,y,width,height,wp,img)
+            Bonus.list[id] = weapon
         }
-        /*if(Math.random()<0.1){
-            let category = new Weapon(6,15,2,40)
-            let img = Img.machinegun
-            const machinegun = new Bonus(id,x,y,width,height,category,img)
-            Bonus.list[id] = machinegun
-        }*/
+    }
+
+    generateLoot() {
+        this.loot(desertEagle,Img.desertEagle,0.05)
+        this.loot(shootgun,Img.shootgun,0.035)
+        this.loot(ak47,Img.ak47,0.025)
+        this.loot(usi,Img.usi,0.04)
+        this.loot(machinegun,Img.machinegun,0.01)
     }
 }
 
@@ -328,7 +335,7 @@ Bullet.generate = function(aimOverwrite) {
     Bullet.list[id] = bullet
 }
 
-const playerOne = new Player(WIDTH/2, HEIGHT/2, 50, 50, 3, 100, Img.player, machinegun)
+const playerOne = new Player(WIDTH/2, HEIGHT/2, 50, 50, 3, 100, Img.player, gun)
 
 class Maps {
     constructor(id,imgSrc,width,height){
@@ -440,7 +447,6 @@ function animate() {
 
     if(time % 1000 === 0)
         Enemy.randomlyGenerate(300,300,0.5,500,500,10,Img.enemy,100)
-    console.log(Bonus.list)
     requestAnimationFrame(animate)
 }
 
