@@ -1,5 +1,6 @@
 const c = document.querySelector('canvas').getContext('2d')
 
+
 const WIDTH = 750
 const HEIGHT = 750
 c.font = '30px Arial'
@@ -370,6 +371,8 @@ function animate() {
     if(time % 1000 === 0)
         Enemy.randomlyGenerate(300,300,0.5,500,500,10,Img.enemy,100)
 
+    if(playerOne.hp < 0)
+        location.href = 'index.html'
     requestAnimationFrame(animate)
 }
 
