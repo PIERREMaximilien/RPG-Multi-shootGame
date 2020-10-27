@@ -371,8 +371,6 @@ function animate() {
     if(time % 1000 === 0)
         Enemy.randomlyGenerate(300,300,0.5,500,500,10,Img.enemy,100)
 
-    if(playerOne.hp < 0)
-        location.href = 'index.html'
     requestAnimationFrame(animate)
 }
 
@@ -420,7 +418,10 @@ addEventListener('mouseup', (event) => {
 
 animate()
 
-
+setInterval(() => {
+    if(playerOne.hp <= 0)
+        location.href = 'index.html'
+}, 10);
 /*
 class Upgrade {
     constructor(id,x,y,width,height,category,img) {
