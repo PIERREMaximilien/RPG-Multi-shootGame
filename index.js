@@ -421,7 +421,7 @@ animate()
 setInterval(() => {
     if(playerOne.hp <= 0)
         location.href = 'index.html'
-}, 10);
+}, 50);
 /*
 class Upgrade {
     constructor(id,x,y,width,height,category,img) {
