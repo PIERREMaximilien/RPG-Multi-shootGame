@@ -1,7 +1,9 @@
 body {
-    margin: 0;
-}
-canvas {
-    margin-top: 3%;
-    margin-left: 25%;
-}
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+  }
+
+  main {
+    flex: 1 0 auto;
+  }
