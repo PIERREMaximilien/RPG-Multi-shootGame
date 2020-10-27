@@ -290,12 +290,12 @@ class Weapon {
 }
 
 const gun = new Weapon(1,25,0,25)
-const desertEagle = new Weapon(1,40,0,40)
+const desertEagle = new Weapon(1,40,0,35)
 const shotgun = new Weapon(0.5,15,1,25)
-const uzi = new Weapon(4,20,0,40)
-const ak47 = new Weapon(3,30,0,50)
-const machinegun = new Weapon(3,15,2,50)
-const playerOne = new Player(WIDTH/2, HEIGHT/2, 50, 50, 3, 100, Img.player, shotgun)
+const uzi = new Weapon(4,20,0,35)
+const ak47 = new Weapon(3,30,0,35)
+const machinegun = new Weapon(3,15,2,40)
+const playerOne = new Player(WIDTH/2, HEIGHT/2, 50, 50, 3, 100, Img.player, machinegun)
 
 class Maps {
     constructor(id,imgSrc,width,height){
