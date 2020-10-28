@@ -13,21 +13,21 @@ let atkTime = 0
 
 const Img = {}
 Img.player = new Image()
-Img.player.src = "img/player.png"
+Img.player.src = "public/img/player.png"
 Img.enemy = new Image()
-Img.enemy.src = 'img/enemy.png'
+Img.enemy.src = 'public/img/enemy.png'
 Img.bullet = new Image()
-Img.bullet.src = 'img/bullet.png'
+Img.bullet.src = 'public/img/bullet.png'
 Img.desertEagle = new Image()
-Img.desertEagle.src = 'img/weapon/desertEagle.png'
+Img.desertEagle.src = 'public/img/weapon/desertEagle.png'
 Img.shootgun = new Image()
-Img.shootgun.src = 'img/weapon/shootgun.png'
+Img.shootgun.src = 'public/img/weapon/shootgun.png'
 Img.ak47 = new Image()
-Img.ak47.src = 'img/weapon/ak47.png'
+Img.ak47.src = 'public/img/weapon/ak47.png'
 Img.machinegun = new Image()
-Img.machinegun.src = 'img/weapon/machinegun.png'
+Img.machinegun.src = 'public/img/weapon/machinegun.png'
 Img.usi = new Image()
-Img.usi.src = 'img/weapon/usi.png'
+Img.usi.src = 'public/img/weapon/usi.png'
 
 
 console.log(Img)
@@ -195,13 +195,17 @@ class Enemy {
 		
 		c.strokeStyle = 'black'
 		c.strokeRect(x1-50,y1,100,10)
-        
+		
 		c.drawImage(this.img,
 			0,0,this.img.width,this.img.height,
 			x,y,this.width,this.height
 		)
 		c.restore()
 	}
+    /*
+    aggro() {
+        if()
+    }*/
 
     updatePosition() {
         let diffX = this.x - playerOne.x
@@ -385,7 +389,7 @@ class Bonus {
 
 Bonus.list = {}
 
-currentMap = new Maps('field','img/map.png',1204,1204)
+currentMap = new Maps('field','public/img/map.png',1204,1204)
 
 let score = 0
 
