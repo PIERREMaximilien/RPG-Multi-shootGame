@@ -12,8 +12,13 @@ let time = 0
 let atkTime = 0
 
 const Img = {}
-Img.player = new Image()
-Img.player.src = "public/img/player.png"
+Img.player = {}
+Img.player.gun = new Image()
+Img.player.gun.src = "public/img/player/gun.png"
+Img.player.rifle = new Image()
+Img.player.rifle.src = "public/img/player/rifle.png"
+Img.player.shootgun = new Image()
+Img.player.shootgun.src = "public/img/player/shootgun.png"
 Img.enemy = new Image()
 Img.enemy.src = 'public/img/enemy.png'
 Img.bullet = new Image()
@@ -28,7 +33,6 @@ Img.machinegun = new Image()
 Img.machinegun.src = 'public/img/weapon/machinegun.png'
 Img.usi = new Image()
 Img.usi.src = 'public/img/weapon/usi.png'
-
 
 console.log(Img)
 
@@ -84,9 +88,17 @@ class Player {
 		
 		x -= this.width/2
         y -= this.height/2
-        
+         
+        // Translate to the center point of our image  
+        c.translate(WIDTH/2,HEIGHT/2)
+        // Perform the rotation  
+        c.rotate(this.aimAngle*Math.PI/180)
+        // Translate back to the top left of our img  
+        c.translate(-WIDTH/2,-HEIGHT/2)  
+        // Finally we draw the image  
+
 		c.drawImage(this.img,
-			0,0,this.img.width,this.img.height,
+            0,0,this.img.width,this.img.height,
 			x,y,this.width,this.height
 		)
 		c.restore()
@@ -227,7 +239,7 @@ class Enemy {
         this.draw()
     }
 
-    loot(wp,img,lootchance) {
+    loot(wp,img,lootchance,playerImg) {
         
         let x = this.x
         let y = this.y
@@ -236,17 +248,17 @@ class Enemy {
         let id = Math.random() 
 
         if(Math.random()<lootchance){
-            let weapon = new Bonus(id,x,y,width,height,wp,img)
+            let weapon = new Bonus(id,x,y,width,height,wp,img,playerImg)
             Bonus.list[id] = weapon
         }
     }
 
     generateLoot() {
-        this.loot(desertEagle,Img.desertEagle,0.05)
-        this.loot(shootgun,Img.shootgun,0.035)
-        this.loot(ak47,Img.ak47,0.025)
-        this.loot(usi,Img.usi,0.04)
-        this.loot(machinegun,Img.machinegun,0.01)
+        this.loot(desertEagle,Img.desertEagle,0.05,Img.player.gun)
+        this.loot(shootgun,Img.shootgun,0.035,Img.player.shootgun)
+        this.loot(ak47,Img.ak47,0.025,Img.player.rifle)
+        this.loot(usi,Img.usi,0.04,Img.player.shootgun)
+        this.loot(machinegun,Img.machinegun,0.01,Img.player.rifle)
     }
 }
 
@@ -339,7 +351,7 @@ Bullet.generate = function(aimOverwrite) {
     Bullet.list[id] = bullet
 }
 
-const playerOne = new Player(WIDTH/2, HEIGHT/2, 50, 50, 3, 100, Img.player, gun)
+const playerOne = new Player(WIDTH/2, HEIGHT/2, 85, 50, 3, 100, Img.player.gun, gun)
 
 class Maps {
     constructor(id,imgSrc,width,height){
@@ -358,7 +370,7 @@ class Maps {
 }
 
 class Bonus {
-    constructor(id,x,y,width,height,category,img) {
+    constructor(id,x,y,width,height,category,img,playerImg) {
         this.id = id
         this.x = x
         this.y = y
@@ -366,6 +378,7 @@ class Bonus {
         this.height = height
         this.category = category
         this.img = img
+        this.playerImg = playerImg
     }
 
     draw() {
@@ -440,18 +453,21 @@ function animate() {
         Bonus.list[key].draw()
         if(playerOne.testCollision(Bonus.list[key])) {
             playerOne.weapon = Bonus.list[key].category
+            playerOne.img = Bonus.list[key].playerImg
             delete Bonus.list[key]
         }
     }
     if(time % 200 === 0) 
-        Enemy.randomlyGenerate(30,30,2,50,50,2,Img.enemy,20)
+        Enemy.randomlyGenerate(30,35,2,50,50,2,Img.enemy,20)
 
     if(time % 500 === 0)
-        Enemy.randomlyGenerate(60,60,1,100,100,4,Img.enemy,50)
+        Enemy.randomlyGenerate(60,70,1,100,100,4,Img.enemy,50)
 
     if(time % 1000 === 0)
-        Enemy.randomlyGenerate(300,300,0.5,500,500,10,Img.enemy,100)
+        Enemy.randomlyGenerate(150,176,0.5,500,500,10,Img.enemy,100)
     requestAnimationFrame(animate)
+
+    console.log(Bonus.list)
 }
 
 addEventListener('keydown', (event) => {
@@ -485,6 +501,7 @@ addEventListener('mousemove', (event) => {
     
     playerOne.aimAngle = Math.atan2(mouseY,mouseX) / Math.PI * 180
 })
+
 
 addEventListener('mousedown', (event) => {
     if(event.button === 0)
