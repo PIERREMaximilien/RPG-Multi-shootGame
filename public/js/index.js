@@ -1,6 +1,5 @@
 const c = document.querySelector('canvas').getContext('2d')
 
-
 const WIDTH = 750
 const HEIGHT = 750
 c.font = '30px Arial'
@@ -12,28 +11,30 @@ let time = 0
 let atkTime = 0
 
 const Img = {}
-Img.player = {}
-Img.player.gun = new Image()
-Img.player.gun.src = "public/img/player/gun.png"
-Img.player.rifle = new Image()
-Img.player.rifle.src = "public/img/player/rifle.png"
-Img.player.shootgun = new Image()
-Img.player.shootgun.src = "public/img/player/shootgun.png"
-Img.enemy = new Image()
-Img.enemy.src = 'public/img/enemy.png'
-Img.bullet = new Image()
-Img.bullet.src = 'public/img/bullet.png'
-Img.desertEagle = new Image()
-Img.desertEagle.src = 'public/img/weapon/desertEagle.png'
-Img.shootgun = new Image()
-Img.shootgun.src = 'public/img/weapon/shootgun.png'
-Img.ak47 = new Image()
-Img.ak47.src = 'public/img/weapon/ak47.png'
-Img.machinegun = new Image()
-Img.machinegun.src = 'public/img/weapon/machinegun.png'
-Img.usi = new Image()
-Img.usi.src = 'public/img/weapon/usi.png'
-
+Img.set = function() {
+    Img.player = {}
+    Img.player.gun = new Image()
+    Img.player.gun.src = "public/img/player/gun.png"
+    Img.player.rifle = new Image()
+    Img.player.rifle.src = "public/img/player/rifle.png"
+    Img.player.shootgun = new Image()
+    Img.player.shootgun.src = "public/img/player/shootgun.png"
+    Img.enemy = new Image()
+    Img.enemy.src = 'public/img/enemy.png'
+    Img.bullet = new Image()
+    Img.bullet.src = 'public/img/bullet.png'
+    Img.desertEagle = new Image()
+    Img.desertEagle.src = 'public/img/weapon/desertEagle.png'
+    Img.shootgun = new Image()
+    Img.shootgun.src = 'public/img/weapon/shootgun.png'
+    Img.ak47 = new Image()
+    Img.ak47.src = 'public/img/weapon/ak47.png'
+    Img.machinegun = new Image()
+    Img.machinegun.src = 'public/img/weapon/machinegun.png'
+    Img.usi = new Image()
+    Img.usi.src = 'public/img/weapon/usi.png'
+}
+Img.set()
 
 function testCollisionRectRect(rect1,rect2) {
 	return rect1.x <= rect2.x + rect2.width 
@@ -59,13 +60,14 @@ const ak47 = new Weapon(3,30,0,35)
 const machinegun = new Weapon(6,15,2,40)
 
 class Player {
-    constructor(x, y, width, height, speed, hp, img, weapon) {
+    constructor(x, y, width, height, speed, hp, hpMax, img, weapon) {
         this.x = x
         this.y = y
         this.width = width
         this.height = height
         this.speed = speed
         this.hp = hp
+        this.hpMax = hpMax
         this.img = img
         this.weapon = weapon
         this.atkCounter = 0
@@ -97,7 +99,23 @@ class Player {
 			x,y,this.width,this.height
 		)
 		c.restore()
-	}
+    }
+    
+    drawHp() {
+        c.save()
+
+        let x1 = WIDTH/2
+		let y1 = HEIGHT/2 - 60
+        c.fillStyle = 'orange'
+		let width = 100*this.hp/this.hpMax
+		if(width < 0)
+			width = 0
+		c.fillRect(x1-50,y1,width,10)
+		
+		c.strokeStyle = 'black'
+        c.strokeRect(x1-50,y1,100,10)
+        c.restore()
+    }
 
     hypotenuse() {	//return distance (number)
 		var vx = this.speed
@@ -181,6 +199,7 @@ class Player {
         this.attack()
         this.atkCounter += this.weapon.atkspeed
         this.draw()
+        this.drawHp()
     }
 }
 
@@ -229,7 +248,7 @@ class Enemy {
 		c.restore()
     }
     
-    hypotenuse() {	//return distance (number)
+    hypotenuse() {
 		var vx = this.speed
 		var vy = this.speed
 		return Math.sqrt(vx*vx+vy*vy);
@@ -377,7 +396,7 @@ Bullet.generate = function(aimOverwrite) {
     Bullet.list[id] = bullet
 }
 
-const playerOne = new Player(WIDTH/2, HEIGHT/2, 85, 50, 3, 100, Img.player.gun, gun)
+const playerOne = new Player(WIDTH/2, HEIGHT/2, 85, 50, 3, 100, 100, Img.player.gun, gun)
 
 class Maps {
     constructor(id,imgSrc,width,height){
@@ -493,6 +512,10 @@ function animate() {
         Enemy.randomlyGenerate(150,176,0.5,500,500,10,Img.enemy,100)
     requestAnimationFrame(animate)
 }
+ 
+function newGame() {
+    console.log('game is on try to survive!')
+}
 
 addEventListener('keydown', (event) => {
     if(event.key === 'd')
@@ -535,6 +558,8 @@ addEventListener('mouseup', (event) => {
     if(event.button === 0)
         playerOne.mouseLeft = false
 })
+
+newGame()
 
 animate()
 
