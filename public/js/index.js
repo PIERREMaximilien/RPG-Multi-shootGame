@@ -34,7 +34,6 @@ Img.machinegun.src = 'public/img/weapon/machinegun.png'
 Img.usi = new Image()
 Img.usi.src = 'public/img/weapon/usi.png'
 
-console.log(Img)
 
 function testCollisionRectRect(rect1,rect2) {
 	return rect1.x <= rect2.x + rect2.width 
@@ -89,13 +88,9 @@ class Player {
 		x -= this.width/2
         y -= this.height/2
          
-        // Translate to the center point of our image  
         c.translate(WIDTH/2,HEIGHT/2)
-        // Perform the rotation  
-        c.rotate(this.aimAngle*Math.PI/180)
-        // Translate back to the top left of our img  
+        c.rotate((this.aimAngle/* -20*/)*Math.PI/180)
         c.translate(-WIDTH/2,-HEIGHT/2)  
-        // Finally we draw the image  
 
 		c.drawImage(this.img,
             0,0,this.img.width,this.img.height,
@@ -104,15 +99,34 @@ class Player {
 		c.restore()
 	}
 
+    hypotenuse() {	//return distance (number)
+		var vx = this.speed
+		var vy = this.speed
+		return Math.sqrt(vx*vx+vy*vy);
+    }
+    
     updatePosition() {
-        if(this.rightPressed)
+        if(this.rightPressed && this.upPressed) {
+            this.x += this.speed*0.7
+            this.y -= this.speed*0.7
+        } else if(this.rightPressed && this.downPressed) {
+            this.x += this.speed*0.7
+            this.y += this.speed*0.7
+        } else if(this.leftPressed && this.upPressed) {
+            this.x -= this.speed*0.7
+            this.y -= this.speed*0.7
+        } else if(this.leftPressed && this.downPressed) {
+            this.x -= this.speed*0.7
+            this.y += this.speed*0.7
+        } else if(this.rightPressed)
             this.x += this.speed   
         else if(this.leftPressed)
             this.x -= this.speed
-        if(this.upPressed)
+        else if(this.upPressed)
             this.y -= this.speed
         else if(this.downPressed)
             this.y += this.speed
+
 
         if(this.x < this.width/2)
 			this.x = this.width/2
@@ -213,25 +227,37 @@ class Enemy {
 			x,y,this.width,this.height
 		)
 		c.restore()
+    }
+    
+    hypotenuse() {	//return distance (number)
+		var vx = this.speed
+		var vy = this.speed
+		return Math.sqrt(vx*vx+vy*vy);
 	}
-    /*
-    aggro() {
-        if()
-    }*/
+
+    aimAngle() {
+        let diffX = this.x - playerOne.x
+        let diffY = this.y - playerOne.y 
+        return Math.atan2(diffY,diffX) / Math.PI * 180
+    }
 
     updatePosition() {
-        let diffX = this.x - playerOne.x
-        let diffY = this.y - playerOne.y
+        let angle = this.aimAngle()
+        let hypotenuse = this.hypotenuse()
 
-        if(diffX < 0)
-            this.x += this.speed
-        else
-            this.x -= this.speed
-        
-        if(diffY < 0)
-            this.y += this.speed
-        else 
-            this.y -= this.speed
+        if(-90 < angle <= 0) {
+            this.x -= Math.cos(angle * Math.PI/180) * hypotenuse
+            this.y -= Math.sin(angle * Math.PI/180) * hypotenuse
+        } else if(-180 < angle <= -90) {
+            this.x -= Math.cos(angle * Math.PI/180) * hypotenuse
+            this.y -= Math.sin(angle * Math.PI/180) * hypotenuse
+        } else if(0 < angle <= 90) {
+            this.x -= Math.cos(angle * Math.PI/180) * hypotenuse
+            this.y -= Math.sin(angle * Math.PI/180) * hypotenuse
+        } else if(90 < angle <= 180) {
+            this.x -= Math.cos(angle * Math.PI/180) * hypotenuse
+            this.y -= Math.sin(angle * Math.PI/180) * hypotenuse
+        }
     }
 
     update() {
@@ -466,8 +492,6 @@ function animate() {
     if(time % 1000 === 0)
         Enemy.randomlyGenerate(150,176,0.5,500,500,10,Img.enemy,100)
     requestAnimationFrame(animate)
-
-    console.log(Bonus.list)
 }
 
 addEventListener('keydown', (event) => {
@@ -501,7 +525,6 @@ addEventListener('mousemove', (event) => {
     
     playerOne.aimAngle = Math.atan2(mouseY,mouseX) / Math.PI * 180
 })
-
 
 addEventListener('mousedown', (event) => {
     if(event.button === 0)
