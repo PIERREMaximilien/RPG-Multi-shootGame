@@ -1,7 +1,7 @@
 const c = document.querySelector('canvas').getContext('2d')
 
-const WIDTH = 750
-const HEIGHT = 750
+const WIDTH = 650
+const HEIGHT = 650
 c.font = '30px Arial'
 c.mozImageSmoothingEnabled = false
 c.msImageSmoothingEnabled = false
@@ -44,20 +44,22 @@ function testCollisionRectRect(rect1,rect2) {
 }
 
 class Weapon {
-    constructor(atkspeed,damage,special,range) {
+    constructor(id,atkspeed,damage,special,range,munitions) {
+        this.id = id
         this.atkspeed = atkspeed
         this.damage = damage
         this.special = special
         this.range = range
+        this.munitions = munitions
     }
 }
 
-const gun = new Weapon(1,25,0,25)
-const desertEagle = new Weapon(1,50,0,25)
-const shootgun = new Weapon(0.5,15,1,25)
-const usi = new Weapon(4,20,0,35)
-const ak47 = new Weapon(3,30,0,35)
-const machinegun = new Weapon(6,15,2,40)
+const gun = new Weapon("gun",1,25,0,35,50)
+const desertEagle = new Weapon("desertEagle",1,50,0,35,50)
+const shootgun = new Weapon("shootgun",0.5,20,1,25,250)
+const usi = new Weapon("usi",4,15,0,35,100)
+const ak47 = new Weapon("ak47",3,30,0,35,100)
+const machinegun = new Weapon("machinegun",6,15,2,150)
 
 class Player {
     constructor(x, y, width, height, speed, hp, hpMax, img, weapon) {
@@ -185,9 +187,9 @@ class Player {
                     Bullet.generate(playerOne.aimAngle - 10)
                 } else if(this.weapon.special === 2) {
                     if(Math.random()< 0.5)
-                        Bullet.generate(playerOne.aimAngle + Math.floor(Math.random()*20))
+                        Bullet.generate(playerOne.aimAngle + Math.floor(Math.random()*15))
                     else
-                        Bullet.generate(playerOne.aimAngle + Math.floor(Math.random()*(-20)))
+                        Bullet.generate(playerOne.aimAngle + Math.floor(Math.random()*(-15)))
                 }
                 playerOne.atkCounter = 0
             }
@@ -299,11 +301,11 @@ class Enemy {
     }
 
     generateLoot() {
-        this.loot(desertEagle,Img.desertEagle,0.05,Img.player.gun)
-        this.loot(shootgun,Img.shootgun,0.035,Img.player.shootgun)
-        this.loot(ak47,Img.ak47,0.025,Img.player.rifle)
-        this.loot(usi,Img.usi,0.04,Img.player.shootgun)
-        this.loot(machinegun,Img.machinegun,0.01,Img.player.rifle)
+        this.loot(desertEagle,Img.desertEagle,0.025,Img.player.gun)
+        this.loot(shootgun,Img.shootgun,0.02,Img.player.shootgun)
+        this.loot(ak47,Img.ak47,0.015,Img.player.rifle)
+        this.loot(usi,Img.usi,0.02,Img.player.shootgun)
+        this.loot(machinegun,Img.machinegun,0.001,Img.player.rifle)
     }
 }
 
@@ -392,8 +394,17 @@ Bullet.generate = function(aimOverwrite) {
 
     const id = Math.random()
     
-    const bullet = new Bullet(id, playerOne.x, playerOne.y, 10, 10, velocity, playerOne.weapon.damage, Img.bullet)
-    Bullet.list[id] = bullet
+    for(let i = 0; i < playerInventory.items.length; i++) {
+        if(playerInventory.items[i].id === playerOne.weapon.id) {
+            if ( 0 < playerInventory.items[i].amount) {
+                playerInventory.items[i].amount -= 1 
+                const bullet = new Bullet(id, playerOne.x, playerOne.y, 10, 10, velocity, playerOne.weapon.damage, Img.bullet)
+                Bullet.list[id] = bullet
+                playerInventory.refreshRender()
+            }
+        }
+    }
+
 }
 
 const playerOne = new Player(WIDTH/2, HEIGHT/2, 85, 50, 3, 100, 100, Img.player.gun, gun)
@@ -497,8 +508,8 @@ function animate() {
 	for(let key in Bonus.list){
         Bonus.list[key].draw()
         if(playerOne.testCollision(Bonus.list[key])) {
-            playerOne.weapon = Bonus.list[key].category
-            playerOne.img = Bonus.list[key].playerImg
+            const weaponM = Bonus.list[key].category
+            playerInventory.addItem(weaponM.id,weaponM.munitions)
             delete Bonus.list[key]
         }
     }
@@ -513,7 +524,7 @@ function animate() {
     requestAnimationFrame(animate)
 }
  
-function newGame() {
+newGame = function() {
     console.log('game is on try to survive!')
 }
 
