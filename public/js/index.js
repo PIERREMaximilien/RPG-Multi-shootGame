@@ -1,4 +1,5 @@
-const c = document.querySelector('canvas').getContext('2d')
+const canvas = document.querySelector('canvas')
+const c = canvas.getContext('2d')
 
 const WIDTH = 650
 const HEIGHT = 650
@@ -550,7 +551,7 @@ addEventListener('keyup', (event) => {
         playerOne.downPressed = false;
 })
 
-addEventListener('mousemove', (event) => {
+canvas.addEventListener('mousemove', (event) => {
     let mouseX = event.clientX - document.querySelector('canvas').getBoundingClientRect().left
 	let mouseY = event.clientY - document.querySelector('canvas').getBoundingClientRect().top
 	
@@ -560,12 +561,12 @@ addEventListener('mousemove', (event) => {
     playerOne.aimAngle = Math.atan2(mouseY,mouseX) / Math.PI * 180
 })
 
-addEventListener('mousedown', (event) => {
+canvas.addEventListener('mousedown', (event) => {
     if(event.button === 0)
         playerOne.mouseLeft = true
 })
 
-addEventListener('mouseup', (event) => {
+canvas.addEventListener('mouseup', (event) => {
     if(event.button === 0)
         playerOne.mouseLeft = false
 })

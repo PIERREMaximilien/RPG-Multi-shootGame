@@ -57,17 +57,6 @@ class Item {
 }
 Item.list = {}
 
-/*
-new Item("potion","Potion",function(){
-    for(let i = 0; i < playerInventory.items.length; i++) {
-        if(playerInventory.items[i].id === "potion") {
-            if ( 0 < playerInventory.items[i].amount) {
-                playerOne.hp += 10
-                playerInventory.removeItem("potion",1) 
-            }
-        }
-    }
-})*/
 new Item("pot","Pot",function(){
     for(let i = 0; i < playerInventory.items.length; i++) {
         if(playerInventory.items[i].id === "pot") {
@@ -102,13 +91,11 @@ new Item("machinegun","Machinegun",function(){
 
 playerInventory.addItem("pot",2)
 playerInventory.addItem("gun",100)
-/* 
-const gun = new Weapon(1,25,0,35,50)
-const desertEagle = new Weapon(1,50,0,35,50)
-const shootgun = new Weapon(0.5,20,1,25,50)
-const usi = new Weapon(4,15,0,35,100)
-const ak47 = new Weapon(3,30,0,35,100)
-const machinegun = new Weapon(6,15,2,150) 
 
+/*
+?   if(this.items.some(i => i.id === id)) {
+?       this.items.amount += amount
+?   } else {
+?       this.items.push({id:id,amount:amount})
+?   }
 */
-
