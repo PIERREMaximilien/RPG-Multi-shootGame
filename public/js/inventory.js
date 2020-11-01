@@ -4,33 +4,19 @@ class Inventory {
     }
     
     addItem(id,amount) {
-        for(let i = 0; i < this.items.length; i++) {
-            if(this.items[i].id === id) {
-                this.items[i].amount += amount
-                this.refreshRender()
-                return
-            }
+        if(this.items.some(i => i.id === id)) {
+            this.items.amount += amount
+            this.refreshRender()
+        } else {
+            this.items.push({id:id,amount:amount})
+            this.refreshRender()
         }
-        this.items.push({id:id,amount:amount})
-        this.refreshRender()
     }
 
     removeItem(id,amount) {
-        for(let i = 0; i < this.items.length; i++) {
-            if(this.items[i].id === id) {
-                this.items[i].amount -= amount
-                this.refreshRender()
-                return
-            }
-        }
-    }
-
-    hasItem(id,amount) {
-        for(let i = 0; i < this.items.length; i++) {
-            if(this.items[i].id ===id) {
-                return this.items[id].amount >= amount
-            }
-            return false
+        if(this.items.some(i => i.id === id)) {
+            this.items.amount -= amount
+            this.refreshRender()
         }
     }
 
@@ -73,7 +59,7 @@ new Item("pot","Pot",function(){
 new Item("gun","Gun",function(){
     playerOne.weapon = gun
 })
-new Item("desertEagle","Desert Eagle",function(){
+new Item("desertEagle","Deagle",function(){
     playerOne.weapon = desertEagle 
 })
 new Item("shootgun","Shootgun",function(){
@@ -91,11 +77,3 @@ new Item("machinegun","Machinegun",function(){
 
 playerInventory.addItem("pot",2)
 playerInventory.addItem("gun",100)
-
-/*
-?   if(this.items.some(i => i.id === id)) {
-?       this.items.amount += amount
-?   } else {
-?       this.items.push({id:id,amount:amount})
-?   }
-*/

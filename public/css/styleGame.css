@@ -3,14 +3,13 @@ body {
     background-color: gray;
 }
 canvas {
-    margin-top: 3%;
     margin-left: 25%;
 }
 #inventory {
-    margin-top: 3%;
+    margin-top: 1%;
     margin-left: 25%;
 }
 button {
-    width: 60px;
-    height: 60px;
+    width: 100px;
+    height: 70px;
 }

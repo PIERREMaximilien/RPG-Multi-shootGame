@@ -1,8 +1,8 @@
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
 
-const WIDTH = 650
-const HEIGHT = 650
+const WIDTH = 700
+const HEIGHT = 700
 c.font = '30px Arial'
 c.mozImageSmoothingEnabled = false
 c.msImageSmoothingEnabled = false
