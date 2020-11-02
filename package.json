@@ -2,7 +2,7 @@
   "name": "rpg-multi-shotgame",
   "version": "1.0.0",
   "description": "Side project to practice Javascript",
-  "main": "server.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

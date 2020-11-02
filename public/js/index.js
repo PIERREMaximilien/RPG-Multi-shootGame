@@ -565,5 +565,5 @@ animate()
 
 setInterval(() => {
     if(playerOne.hp <= 0)
-        location.href = 'index.html'
+        location.href = '/'
 }, 50);
