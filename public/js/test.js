@@ -1,16 +1,20 @@
+const chatText = document.getElementById('chat-text')
+const chatInput = document.getElementById('chat-input')
+const chatForm = document.getElementById('chat-form')
+
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
 c.font = '30px Arial'
 
-const WIDTH = 750
-const HEIGHT = 750
+const WIDTH = 500
+const HEIGHT = 500
 
 let socket = io();
 
 socket.on('newposition',(data) => {
     c.clearRect(0,0,750,750)
     for(let i = 0; i < data.player.length; i++)
-        c.fillText(data.player[i].number,data.player[i].x,data.player[i].y)
+        c.fillRect(data.player[i].x,data.player[i].y,20,20)
     for(let i = 0; i < data.bullet.length; i++)
         c.fillRect(data.bullet[i].x,data.bullet[i].y,10,10)
 })

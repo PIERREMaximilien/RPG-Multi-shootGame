@@ -1,15 +1,13 @@
 const E = require('./Entity')
 const Entity = E.Entity
 
-const B = require('./Bullet')
-const Bullet = B.Bullet
-
 
 class Player extends Entity {
     constructor(id) {
         super()
         this.id = id
-        this.number = "" + Math.floor(10*Math.random())
+        this.width = 20
+        this.height = 20
         this.pressingRight = false
         this.pressingLeft = false
         this.pressingUp = false
@@ -33,7 +31,7 @@ class Player extends Entity {
     }
 
     shootBullet = (angle) => {
-        const bullet = new Bullet(this.x,this.y,angle)
+        const bullet = new Bullet(this.x,this.y,angle,this.id)
         Bullet.list[bullet.id] = bullet
     }
 
@@ -83,14 +81,67 @@ Player.update = () => {
         pack.push({
             x:player.x,
             y:player.y,
-            number:player.number
+            width:player.width,
+            height:player.width
         })
     }
     return pack
 }
 Player.list = {}
 
+
+class Bullet extends Entity {
+    constructor(x,y,angle,parent,dmg,img) {
+        super()
+        this.x = x
+        this.y = y
+        this.width = 10
+        this.height = 10
+        this.id = Math.random()
+        this.spdX = Math.cos(angle/180*Math.PI) * 10;
+        this.spdY = Math.sin(angle/180*Math.PI) * 10;
+        this.dmg = dmg
+        this.img = img
+        this.timer = 0
+        this.parent = parent
+        this.toRemove = false
+    }
+    update() {
+		if(this.timer++ > 100)
+			this.toRemove = true;
+		super.update();
+		
+		for(let i in Player.list){
+			let p = Player.list[i];
+			if(this.testCollision(p) && this.parent != p.id){
+				p.hp -= 1;
+				this.toRemove = true;
+			}
+		}
+	}
+}
+
+Bullet.update = () => {
+    const pack = []
+    for(let i in Bullet.list) {
+        let bullet = Bullet.list[i]
+        bullet.update()
+        if(bullet.toRemove)
+            delete Bullet.list[i]
+        else {
+            pack.push({
+                x:bullet.x,
+                y:bullet.y,
+            }) 
+        }
+    }
+    return pack
+}
+Bullet.list = {}
+
+
 exports.Player = Player
+exports.Bullet = Bullet
 
 /*
 class Player {

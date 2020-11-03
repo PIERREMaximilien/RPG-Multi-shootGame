@@ -1,9 +1,8 @@
 const P = require('./server/Player')
 const Player = P.Player
 
-const B = require('./server/Bullet')
+const B = require('./server/Player')
 const Bullet = B.Bullet
-
 
 const express = require('express')
 const app = express()

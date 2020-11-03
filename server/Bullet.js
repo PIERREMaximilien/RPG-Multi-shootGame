@@ -1,37 +1,4 @@
-const E = require('./Entity')
-const Entity = E.Entity
 
-
-class Bullet extends Entity {
-    constructor(x,y,angle,dmg,img) {
-        super()
-        this.x = x
-        this.y = y
-        this.id = Math.random()
-        this.spdX = Math.cos(angle/180*Math.PI) * 10;
-        this.spdY = Math.sin(angle/180*Math.PI) * 10;
-        this.dmg = dmg
-        this.img = img
-        this.timer = 0
-    }
-}
-Bullet.list = {}
-
-Bullet.update = () => {
-    const pack = []
-    for(let i in Bullet.list) {
-        let bullet = Bullet.list[i]
-        bullet.update()
-        pack.push({
-            x:bullet.x,
-            y:bullet.y
-        })
-    }
-    return pack
-}
-
-
-exports.Bullet = Bullet
 
 /*
 class Bullet extends Entity {

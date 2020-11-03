@@ -6,7 +6,16 @@
     <title>server Test</title>
 </head>
 <body>
-    <canvas width="750" height="750" style="border:1px solid #000000;"></canvas>
+    <canvas width="500" height="500" style="border:1px solid #000000;"></canvas>
+
+    <div id="chat-text" style="width:500px;height:100px;overflow-y:scroll">
+        <div>Hello!</div>
+    </div>
+     
+    <form id="chat-form">
+        <input id="chat-input" type="text" style="width:500px"></input>
+    </form>
+
     <script src="/socket.io/socket.io.js"></script>
     <script type="module" src="/public/js/test.js"></script>
 </body>
