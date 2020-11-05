@@ -31,7 +31,7 @@ class Player extends Entity {
     }
 
     shootBullet = (angle) => {
-        const bullet = new Bullet(this.x,this.y,angle,this.id)
+        const bullet = new Bullet(angle,this.id,10)
         Bullet.list[bullet.id] = bullet
         initPack.bullet.push(this.getInitPack())
     }
@@ -51,7 +51,7 @@ class Player extends Entity {
             this.spdY = 0
     }
 
-    getInitPack = ()=>{
+    getInitPack = () => {
 		return {
 			id:this.id,
 			x:this.x,
@@ -62,7 +62,7 @@ class Player extends Entity {
 			score:this.score,
 		};		
 	}
-	getUpdatePack = ()=>{
+	getUpdatePack = () => {
 		return {
 			id:this.id,
 			x:this.x,
@@ -109,28 +109,25 @@ Player.onDisconnect = (socket) => {
 	removePack.player.push(socket.id);
 }
 Player.update = () => {
-	let pack = [];
+	let pack = []
 	for(let i in Player.list){
-		let player = Player.list[i];
-		player.update();
-		pack.push(player.getUpdatePack());		
+		let player = Player.list[i]
+		player.update()
+		pack.push(player.getUpdatePack())	
 	}
-	return pack;
+	return pack
 }
 Player.list = {}
 
 class Bullet extends Entity {
-    constructor(x,y,angle,parent,dmg,img) {
+    constructor(angle,parent,dmg) {
         super()
-        this.x = x
-        this.y = y
         this.width = 10
         this.height = 10
         this.id = Math.random()
         this.spdX = Math.cos(angle/180*Math.PI) * 10;
         this.spdY = Math.sin(angle/180*Math.PI) * 10;
         this.dmg = dmg
-        this.img = img
         this.timer = 0
         this.parent = parent
         this.toRemove = false
@@ -164,15 +161,15 @@ class Bullet extends Entity {
 	}
 }
 Bullet.update = () => {
-	let pack = [];
+	let pack = []
 	for(let i in Bullet.list){
-		let bullet = Bullet.list[i];
-		bullet.update();
+		let bullet = Bullet.list[i]
+		bullet.update()
 		if(bullet.toRemove){
 			delete Bullet.list[i];
 			removePack.bullet.push(bullet.id);
 		} else
-			pack.push(bullet.getUpdatePack());		
+			pack.push(bullet.getUpdatePack())	
 	}
 	return pack;
 }

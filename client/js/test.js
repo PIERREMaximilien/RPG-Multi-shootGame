@@ -153,6 +153,7 @@ socket.on('init',(data) => {
 })
 socket.on('update',(data) => {
     //{ player : [{id:123,x:0,y:0},{id:1,x:0,y:0}], bullet: []}
+
     for(let i = 0 ; i < data.player.length; i++){
         let pack = data.player[i]
         let p = Player.list[pack.id]
@@ -169,7 +170,7 @@ socket.on('update',(data) => {
     }
     for(let i = 0 ; i < data.bullet.length; i++){
         let pack = data.bullet[i]
-        let b = Bullet.list[data.bullet[i].id];
+        let b = Bullet.list[pack.id];
         if(b){
             if(pack.x !== undefined)
                 b.x = pack.x
