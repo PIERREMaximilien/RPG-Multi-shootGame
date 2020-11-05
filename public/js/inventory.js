@@ -4,19 +4,22 @@ class Inventory {
     }
     
     addItem(id,amount) {
-        if(this.items.some(i => i.id === id)) {
-            this.items.amount += amount
-            this.refreshRender()
-        } else {
-            this.items.push({id:id,amount:amount})
-            this.refreshRender()
-        }
+        for(let i = 0 ; i < this.items.length; i++){
+			if(this.items[i].id === id){
+				this.items[i].amount += amount
+				this.refreshRender()
+				return
+			}
+		}
+        this.items.push({id:id,amount:amount})
+        this.refreshRender()
     }
 
     removeItem(id,amount) {
-        if(this.items.some(i => i.id === id)) {
-            this.items.amount -= amount
-            this.refreshRender()
+		for(let i = 0 ; i < this.items.length; i++){
+			if(this.items[i].id === id){
+				this.items[i].amount -= amount
+            }
         }
     }
 

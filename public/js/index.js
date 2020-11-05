@@ -60,7 +60,7 @@ const desertEagle = new Weapon("desertEagle",1,50,0,35,50)
 const shootgun = new Weapon("shootgun",0.5,20,1,25,250)
 const usi = new Weapon("usi",4,15,0,35,100)
 const ak47 = new Weapon("ak47",3,30,0,35,100)
-const machinegun = new Weapon("machinegun",6,15,2,150)
+const machinegun = new Weapon("machinegun",6,15,2,15,250)
 
 class Player {
     constructor(x, y, width, height, speed, hp, hpMax, img, weapon) {
@@ -94,7 +94,7 @@ class Player {
         y -= this.height/2
          
         c.translate(WIDTH/2,HEIGHT/2)
-        c.rotate((this.aimAngle/* -20*/)*Math.PI/180)
+        c.rotate((this.aimAngle)*Math.PI/180)
         c.translate(-WIDTH/2,-HEIGHT/2)  
 
 		c.drawImage(this.img,
