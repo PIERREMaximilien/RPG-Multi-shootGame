@@ -33,6 +33,7 @@ class Player extends Entity {
     shootBullet = (angle) => {
         const bullet = new Bullet(this.x,this.y,angle,this.id)
         Bullet.list[bullet.id] = bullet
+        initPack.bullet.push(this.getInitPack())
     }
 
     updateSpd() {
@@ -49,13 +50,34 @@ class Player extends Entity {
         else 
             this.spdY = 0
     }
-}
 
+    getInitPack = ()=>{
+		return {
+			id:this.id,
+			x:this.x,
+			y:this.y,	
+			number:this.number,	
+			hp:this.hp,
+			hpMax:this.hpMax,
+			score:this.score,
+		};		
+	}
+	getUpdatePack = ()=>{
+		return {
+			id:this.id,
+			x:this.x,
+			y:this.y,
+			hp:this.hp,
+			score:this.score,
+		}	
+	}
+}
 Player.onConnect = (socket) => {
     let player = new Player(socket.id)
     Player.list[socket.id] = player
+    initPack.player.push(player.getInitPack())
 
-    socket.on('keyPress',(data)=> {
+    socket.on('keyPress',(data) => {
         if(data.inputID === 'right')
             player.pressingRight = data.state
         else if(data.inputID === 'left')
@@ -69,26 +91,33 @@ Player.onConnect = (socket) => {
         if (data.inputID === 'mouseAngle')
             player.mouseAngle = data.state
     })
+
+    socket.emit('init',{
+        selfId:socket.id,
+        player:Player.getAllInitPack(),
+        bullet:Bullet.getAllInitPack(),
+    })
+}
+Player.getAllInitPack = () => {
+	let players = [];
+	for(let i in Player.list)
+		players.push(Player.list[i].getInitPack());
+	return players;
 }
 Player.onDisconnect = (socket) => {
-    delete Player.list[socket.id]
+	delete Player.list[socket.id];
+	removePack.player.push(socket.id);
 }
 Player.update = () => {
-    const pack = []
-    for(let i in Player.list) {
-        let player = Player.list[i]
-        player.update()
-        pack.push({
-            x:player.x,
-            y:player.y,
-            width:player.width,
-            height:player.width
-        })
-    }
-    return pack
+	let pack = [];
+	for(let i in Player.list){
+		let player = Player.list[i];
+		player.update();
+		pack.push(player.getUpdatePack());		
+	}
+	return pack;
 }
 Player.list = {}
-
 
 class Bullet extends Entity {
     constructor(x,y,angle,parent,dmg,img) {
@@ -118,173 +147,43 @@ class Bullet extends Entity {
 				this.toRemove = true;
 			}
 		}
+    }
+    getInitPack = () => {
+		return {
+			id:this.id,
+			x:this.x,
+			y:this.y,		
+		};
+	}
+	getUpdatePack = () => {
+		return {
+			id:this.id,
+			x:this.x,
+			y:this.y,		
+		};
 	}
 }
-
 Bullet.update = () => {
-    const pack = []
-    for(let i in Bullet.list) {
-        let bullet = Bullet.list[i]
-        bullet.update()
-        if(bullet.toRemove)
-            delete Bullet.list[i]
-        else {
-            pack.push({
-                x:bullet.x,
-                y:bullet.y,
-            }) 
-        }
-    }
-    return pack
+	let pack = [];
+	for(let i in Bullet.list){
+		let bullet = Bullet.list[i];
+		bullet.update();
+		if(bullet.toRemove){
+			delete Bullet.list[i];
+			removePack.bullet.push(bullet.id);
+		} else
+			pack.push(bullet.getUpdatePack());		
+	}
+	return pack;
+}
+Bullet.getAllInitPack = () => {
+	let bullets = [];
+	for(let i in Bullet.list)
+		bullets.push(Bullet.list[i].getInitPack());
+	return bullets;
 }
 Bullet.list = {}
 
 
 exports.Player = Player
 exports.Bullet = Bullet
-
-/*
-class Player {
-    constructor(x, y, width, height, speed, hp, hpMax, img, weapon) {
-        this.x = x
-        this.y = y
-        this.width = width
-        this.height = height
-        this.speed = speed
-        this.hp = hp
-        this.hpMax = hpMax
-        this.img = img
-        this.weapon = weapon
-        this.atkCounter = 0
-        this.aimAngle = 0
-        this.mouseLeft = false
-        this.rightPressed = false
-        this.leftPressed = false
-        this.upPressed = false
-        this.downPressed = false
-    }
-
-    draw() {
-        c.save()
-        let x = this.x - playerOne.x
-		let y = this.y - playerOne.y
-		
-		x += WIDTH/2
-		y += HEIGHT/2
-		
-		x -= this.width/2
-        y -= this.height/2
-         
-        c.translate(WIDTH/2,HEIGHT/2)
-        c.rotate((this.aimAngle)*Math.PI/180)
-        c.translate(-WIDTH/2,-HEIGHT/2)  
-
-		c.drawImage(this.img,
-            0,0,this.img.width,this.img.height,
-			x,y,this.width,this.height
-		)
-		c.restore()
-    }
-    
-    drawHp() {
-        c.save()
-
-        let x1 = WIDTH/2
-		let y1 = HEIGHT/2 - 60
-        c.fillStyle = 'orange'
-		let width = 100*this.hp/this.hpMax
-		if(width < 0)
-			width = 0
-		c.fillRect(x1-50,y1,width,10)
-		
-		c.strokeStyle = 'black'
-        c.strokeRect(x1-50,y1,100,10)
-        c.restore()
-    }
-
-    hypotenuse() {	//return distance (number)
-		var vx = this.speed
-		var vy = this.speed
-		return Math.sqrt(vx*vx+vy*vy);
-    }
-    
-    updatePosition() {
-        if(this.rightPressed && this.upPressed) {
-            this.x += this.speed*0.7
-            this.y -= this.speed*0.7
-        } else if(this.rightPressed && this.downPressed) {
-            this.x += this.speed*0.7
-            this.y += this.speed*0.7
-        } else if(this.leftPressed && this.upPressed) {
-            this.x -= this.speed*0.7
-            this.y -= this.speed*0.7
-        } else if(this.leftPressed && this.downPressed) {
-            this.x -= this.speed*0.7
-            this.y += this.speed*0.7
-        } else if(this.rightPressed)
-            this.x += this.speed   
-        else if(this.leftPressed)
-            this.x -= this.speed
-        else if(this.upPressed)
-            this.y -= this.speed
-        else if(this.downPressed)
-            this.y += this.speed
-
-
-        if(this.x < this.width/2)
-			this.x = this.width/2
-		if(this.x > currentMap.width*2 - this.width/2)
-			this.x = currentMap.width*2 - this.width/2;
-		if(this.y < this.height/2)
-			this.y = this.height/2;
-		if(this.y > currentMap.height*2 - this.height/2)
-            this.y = currentMap.height*2 - this.height/2;
-    }
-
-    testCollision(entity2) {	//return if colliding (true/false)
-		let rect1 = {
-			x:this.x-this.width/2,
-			y:this.y-this.height/2,
-			width:this.width,
-			height:this.height,
-		}
-		let rect2 = {
-			x:entity2.x-entity2.width/2,
-			y:entity2.y-entity2.height/2,
-			width:entity2.width,
-			height:entity2.height,
-		}
-		return testCollisionRectRect(rect1,rect2);
-    }
-
-    attack() {
-        if(this.mouseLeft) {
-            if(this.atkCounter > 30) {
-                if(this.weapon.special === 0)
-                    Bullet.generate()
-                else if(this.weapon.special === 1) {
-                    Bullet.generate(playerOne.aimAngle)
-                    Bullet.generate(playerOne.aimAngle + 5)
-                    Bullet.generate(playerOne.aimAngle - 5)
-                    Bullet.generate(playerOne.aimAngle + 10)
-                    Bullet.generate(playerOne.aimAngle - 10)
-                } else if(this.weapon.special === 2) {
-                    if(Math.random()< 0.5)
-                        Bullet.generate(playerOne.aimAngle + Math.floor(Math.random()*20))
-                    else
-                        Bullet.generate(playerOne.aimAngle + Math.floor(Math.random()*(-20)))
-                }
-                playerOne.atkCounter = 0
-            }
-        }
-    }
-    
-    update(){
-        this.updatePosition()
-        this.attack()
-        this.atkCounter += this.weapon.atkspeed
-        this.draw()
-        this.drawHp()
-    }
-}
-*/
