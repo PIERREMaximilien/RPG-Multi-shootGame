@@ -31,9 +31,11 @@ class Player extends Entity {
     }
 
     shootBullet = (angle) => {
-        const bullet = new Bullet(angle,this.id,10)
+        let bullet = new Bullet(angle,this.id,10)
+        bullet.x = this.x;
+		bullet.y = this.y;
         Bullet.list[bullet.id] = bullet
-        initPack.bullet.push(this.getInitPack())
+        initPack.bullet.push(bullet.getInitPack())
     }
 
     updateSpd() {
@@ -166,18 +168,17 @@ Bullet.update = () => {
 		let bullet = Bullet.list[i]
 		bullet.update()
 		if(bullet.toRemove){
-			delete Bullet.list[i];
-			removePack.bullet.push(bullet.id);
+			delete Bullet.list[i]
+			removePack.bullet.push(bullet.id)
 		} else
 			pack.push(bullet.getUpdatePack())	
 	}
-	return pack;
+	return pack
 }
 Bullet.getAllInitPack = () => {
 	let bullets = [];
 	for(let i in Bullet.list)
-		bullets.push(Bullet.list[i].getInitPack());
-	return bullets;
+		bullets.push(Bullet.list[i].getInitPack())
 }
 Bullet.list = {}
 

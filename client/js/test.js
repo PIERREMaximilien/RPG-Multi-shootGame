@@ -80,6 +80,8 @@ Img.set = () => {
     Img.machinegun.src = 'client/img/weapon/machinegun.png'
     Img.usi = new Image()
     Img.usi.src = 'client/img/weapon/usi.png'
+    Img.map = new Image()
+    Img.map.src = 'client/img/map.png'
 }
 Img.set()
 
@@ -139,6 +141,7 @@ Bullet.list = {};
 let selfId = null
 
 socket.on('init',(data) => {
+    console.log(data)
     if(data.selfId)
         selfId = data.selfId;
     //{ player : [{id:123,number:'1',x:0,y:0},{id:1,number:'2',x:0,y:0}], bullet: []}
@@ -152,8 +155,6 @@ socket.on('init',(data) => {
     }
 })
 socket.on('update',(data) => {
-    //{ player : [{id:123,x:0,y:0},{id:1,x:0,y:0}], bullet: []}
-
     for(let i = 0 ; i < data.player.length; i++){
         let pack = data.player[i]
         let p = Player.list[pack.id]
@@ -170,7 +171,7 @@ socket.on('update',(data) => {
     }
     for(let i = 0 ; i < data.bullet.length; i++){
         let pack = data.bullet[i]
-        let b = Bullet.list[pack.id];
+        let b = Bullet.list[pack.id]
         if(b){
             if(pack.x !== undefined)
                 b.x = pack.x
@@ -180,7 +181,6 @@ socket.on('update',(data) => {
     }
 });
 socket.on('remove',(data) => {
-    //{player:[12323],bullet:[12323,123123]}
     for(let i = 0 ; i < data.player.length; i++){
         delete Player.list[data.player[i]]
     }
@@ -189,11 +189,17 @@ socket.on('remove',(data) => {
     }
 })
 
+let drawMap = () => {
+    var x = WIDTH/2 - Player.list[selfId].x;
+    var y = HEIGHT/2 - Player.list[selfId].y;
+    ctx.drawImage(Img.map,x,y);
+}
+
 setInterval(() => {
     if(!selfId)
         return
     ctx.clearRect(0,0,500,500)
-    //drawMap()
+    drawMap()
     //drawScore()
     for(let i in Player.list)
         Player.list[i].draw()

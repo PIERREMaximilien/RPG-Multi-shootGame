@@ -21,7 +21,7 @@ app.get('/game',(req,res) => {
 })
 
 
-http.listen(2000)
+http.listen(process.env.PORT || 2000 )
 http.on('listening', () => {
     console.log('Server listen on port 2000')
 })
@@ -122,4 +122,4 @@ setInterval(() => {
 	initPack.bullet = [];
 	removePack.player = [];
 	removePack.bullet = [];
-}, 1000/25);
+}, 40);
