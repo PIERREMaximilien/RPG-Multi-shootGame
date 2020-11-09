@@ -26,7 +26,7 @@ http.on('listening', () => {
     console.log('Server listen on port 2000')
 })
 
-const DEBUG = true
+const DEBUG = false
 
 let USERS = {
 	//username:password
