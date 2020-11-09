@@ -1,3 +1,5 @@
+const port = process.env.PORT
+
 const P = require('./server/Player')
 const Player = P.Player
 
@@ -21,7 +23,7 @@ app.get('/game',(req,res) => {
 })
 
 
-http.listen(process.env.PORT || 2000 )
+http.listen(port)
 http.on('listening', () => {
     console.log('Server listen on port 2000')
 })
