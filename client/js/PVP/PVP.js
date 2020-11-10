@@ -110,16 +110,16 @@ class Player {
         let width = 85
         let height = 50
 
+        /*
         ctx.translate(WIDTH/2,HEIGHT/2)
         ctx.rotate((this.mouseAngle)*Math.PI/180)
         ctx.translate(-WIDTH/2,-HEIGHT/2) 
-        
+        */
         
         ctx.drawImage(Img.player.gun,
             0,0,Img.player.gun.width,Img.player.gun.height,
             x-width/2,y-height/2,85,50)
         ctx.restore()
-        //ctx.fillText(this.score,this.x,this.y-60);
     }
 }
 Player.list = {}
