@@ -1,5 +1,5 @@
-const WIDTH = 500
-const HEIGHT = 500
+const WIDTH = 1155
+const HEIGHT = 650
 const socket = io()
 
 
@@ -88,7 +88,6 @@ Img.set()
 class Player {
     constructor(initPack) {
     this.id = initPack.id;
-    this.number = initPack.number;
     this.x = initPack.x;
     this.y = initPack.y;
     this.hp = initPack.hp;
@@ -141,7 +140,6 @@ Bullet.list = {};
 let selfId = null
 
 socket.on('init',(data) => {
-    console.log(data)
     if(data.selfId)
         selfId = data.selfId;
     //{ player : [{id:123,number:'1',x:0,y:0},{id:1,number:'2',x:0,y:0}], bullet: []}
@@ -189,18 +187,34 @@ socket.on('remove',(data) => {
     }
 })
 
-let drawMap = () => {
-    var x = WIDTH/2 - Player.list[selfId].x;
-    var y = HEIGHT/2 - Player.list[selfId].y;
-    ctx.drawImage(Img.map,x,y);
+class Maps {
+    constructor(id,imgSrc,width,height){
+		this.id = id,
+		this.image = new Image(),
+		this.width = width,
+        this.height	= height
+        this.image.src = imgSrc
+	}
+	
+	draw() {
+		let x = WIDTH/2 - Player.list[selfId].x
+		let y = HEIGHT/2 - Player.list[selfId].y
+        ctx.drawImage(this.image,0,0,this.image.width,this.image.height,x,y,this.image.width*2,this.image.height*2)
+	}
+}
+const currentMap = new Maps('field','client/img/map.png',1204,1204)
+
+let drawScore = function(){
+    ctx.fillStyle = 'white';
+    ctx.fillText(Player.list[selfId].score,0,30);
 }
 
 setInterval(() => {
     if(!selfId)
         return
     ctx.clearRect(0,0,500,500)
-    drawMap()
-    //drawScore()
+    currentMap.draw()
+    drawScore()
     for(let i in Player.list)
         Player.list[i].draw()
     for(let i in Bullet.list)

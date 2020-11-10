@@ -6,15 +6,15 @@ class Player extends Entity {
     constructor(id) {
         super()
         this.id = id
-        this.width = 20
-        this.height = 20
+        this.width = 85
+        this.height = 50
         this.pressingRight = false
         this.pressingLeft = false
         this.pressingUp = false
         this.pressingDown = false
         this.pressingAttack = false
         this.mouseAngle = 0
-        this.maxSpd = 10
+        this.maxSpd = 6
         this.hp = 100
         this.hpMax = 100
         this.score = 0
@@ -22,6 +22,7 @@ class Player extends Entity {
     }
     
     update() {
+        this.atkCounter++
         this.updateSpd()
         super.update()
 
@@ -31,11 +32,14 @@ class Player extends Entity {
     }
 
     shootBullet = (angle) => {
-        let bullet = new Bullet(angle,this.id,10)
-        bullet.x = this.x;
-		bullet.y = this.y;
-        Bullet.list[bullet.id] = bullet
-        initPack.bullet.push(bullet.getInitPack())
+        if(this.atkCounter > 10) {
+            let bullet = new Bullet(angle,this.id,10)
+            bullet.x = this.x;
+            bullet.y = this.y;
+            Bullet.list[bullet.id] = bullet
+            initPack.bullet.push(bullet.getInitPack())
+            this.atkCounter = 0
+        }
     }
 
     updateSpd() {
@@ -57,8 +61,7 @@ class Player extends Entity {
 		return {
 			id:this.id,
 			x:this.x,
-			y:this.y,	
-			number:this.number,	
+			y:this.y,
 			hp:this.hp,
 			hpMax:this.hpMax,
 			score:this.score,
@@ -127,22 +130,31 @@ class Bullet extends Entity {
         this.width = 10
         this.height = 10
         this.id = Math.random()
-        this.spdX = Math.cos(angle/180*Math.PI) * 10;
-        this.spdY = Math.sin(angle/180*Math.PI) * 10;
+        this.spdX = Math.cos(angle/180*Math.PI) * 20;
+        this.spdY = Math.sin(angle/180*Math.PI) * 20;
         this.dmg = dmg
         this.timer = 0
         this.parent = parent
         this.toRemove = false
     }
     update() {
-		if(this.timer++ > 100)
+		if(this.timer++ > 20)
 			this.toRemove = true;
 		super.update();
 		
 		for(let i in Player.list){
 			let p = Player.list[i];
 			if(this.testCollision(p) && this.parent != p.id){
-				p.hp -= 1;
+                p.hp -= 10;
+								
+				if(p.hp <= 0){
+					let shooter = Player.list[this.parent];
+					if(shooter)
+						shooter.score += 1;
+					p.hp = p.hpMax;
+					p.x = Math.random() * 1155;
+					p.y = Math.random() * 650;					
+				}
 				this.toRemove = true;
 			}
 		}
