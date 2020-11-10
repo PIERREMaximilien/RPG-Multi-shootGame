@@ -64,7 +64,8 @@ class Player extends Entity {
 			y:this.y,
 			hp:this.hp,
 			hpMax:this.hpMax,
-			score:this.score,
+            score:this.score,
+            mouseAngle:this.mouseAngle,
 		};		
 	}
 	getUpdatePack = () => {
@@ -73,7 +74,8 @@ class Player extends Entity {
 			x:this.x,
 			y:this.y,
 			hp:this.hp,
-			score:this.score,
+            score:this.score,
+            mouseAngle:this.mouseAngle,
 		}	
 	}
 }

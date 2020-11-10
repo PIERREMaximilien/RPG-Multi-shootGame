@@ -93,9 +93,13 @@ class Player {
     this.hp = initPack.hp;
     this.hpMax = initPack.hpMax;
     this.score = initPack.score;
+    this.mouseAngle = initPack.mouseAngle;
+    this.width = 85;
+    this.height = 50;
     }
     
-    draw() {	
+    draw() {
+        ctx.save()	
         let x = this.x - Player.list[selfId].x + WIDTH/2
         let y = this.y - Player.list[selfId].y + HEIGHT/2
         
@@ -105,12 +109,16 @@ class Player {
         
         let width = 85
         let height = 50
+
+        ctx.translate(WIDTH/2,HEIGHT/2)
+        ctx.rotate((this.mouseAngle)*Math.PI/180)
+        ctx.translate(-WIDTH/2,-HEIGHT/2) 
         
         
         ctx.drawImage(Img.player.gun,
             0,0,Img.player.gun.width,Img.player.gun.height,
             x-width/2,y-height/2,85,50)
-        
+        ctx.restore()
         //ctx.fillText(this.score,this.x,this.y-60);
     }
 }
@@ -123,7 +131,8 @@ class Bullet {
         this.y = initPack.y; 
     }
     
-    draw() {			
+    draw() {
+        ctx.save()			
         let width = 10
         let height = 10
         
@@ -133,6 +142,7 @@ class Bullet {
         ctx.drawImage(Img.bullet,
             0,0,Img.bullet.width,Img.bullet.height,
             x-width/2,y-height/2,10,10);
+        ctx.restore()
     }
 }
 Bullet.list = {};
@@ -165,6 +175,8 @@ socket.on('update',(data) => {
                 p.hp = pack.hp
             if(pack.score !== undefined)
                 p.score = pack.score
+            if(pack.mouseAngle !== undefined)
+                p.mouseAngle = pack.mouseAngle
         }
     }
     for(let i = 0 ; i < data.bullet.length; i++){
@@ -197,22 +209,26 @@ class Maps {
 	}
 	
 	draw() {
+        ctx.save()
 		let x = WIDTH/2 - Player.list[selfId].x
 		let y = HEIGHT/2 - Player.list[selfId].y
         ctx.drawImage(this.image,0,0,this.image.width,this.image.height,x,y,this.image.width*2,this.image.height*2)
+        ctx.restore()
 	}
 }
 const currentMap = new Maps('field','client/img/map.png',1204,1204)
 
 let drawScore = function(){
+    ctx.save()
     ctx.fillStyle = 'white';
     ctx.fillText(Player.list[selfId].score,0,30);
+    ctx.restore()
 }
 
 setInterval(() => {
     if(!selfId)
         return
-    ctx.clearRect(0,0,500,500)
+    ctx.clearRect(0,0,WIDTH,HEIGHT)
     currentMap.draw()
     drawScore()
     for(let i in Player.list)
