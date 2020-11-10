@@ -43,18 +43,36 @@ class Player extends Entity {
     }
 
     updateSpd() {
-        if(this.pressingRight)
-            this.spdX = this.maxSpd
+
+        if(this.pressingRight && this.pressingUp) {
+            this.x += this.maxSpd*0.7
+            this.y -= this.maxSpd*0.7
+        } else if(this.pressingRight && this.pressingDown) {
+            this.x += this.maxSpd*0.7
+            this.y += this.maxSpd*0.7
+        } else if(this.pressingLeft && this.pressingUp) {
+            this.x -= this.maxSpd*0.7
+            this.y -= this.maxSpd*0.7
+        } else if(this.pressingLeft && this.pressingDown) {
+            this.x -= this.maxSpd*0.7
+            this.y += this.maxSpd*0.7
+        } else if(this.pressingRight)
+            this.x += this.maxSpd   
         else if(this.pressingLeft)
-            this.spdX = -this.maxSpd
-        else
-            this.spdX = 0
-        if(this.pressingUp)
-            this.spdY = -this.maxSpd
+            this.x -= this.maxSpd
+        else if(this.pressingUp)
+            this.y -= this.maxSpd
         else if(this.pressingDown)
-            this.spdY = this.maxSpd
-        else 
-            this.spdY = 0
+            this.y += this.maxSpd
+
+        if(this.x < this.width/2)
+			this.x = this.width/2
+		if(this.x > 2408 - this.width/2)
+			this.x = 2408 - this.width/2;
+		if(this.y < this.height/2)
+			this.y = this.height/2;
+		if(this.y > 2408 - this.height/2)
+            this.y = 2408 - this.height/2;
     }
 
     getInitPack = () => {
