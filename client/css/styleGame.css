@@ -3,6 +3,9 @@ body {
     background-color: gray;
 }
 canvas {
+    margin-left: 25%;
+}
+#inventory {
     margin-top: 3%;
     margin-left: 25%;
 }

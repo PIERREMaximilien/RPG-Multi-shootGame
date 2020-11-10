@@ -1,4 +1,4 @@
-const port = process.env.PORT
+const port = process.env.PORT || 2000
 
 const P = require('./server/Player')
 const Player = P.Player
@@ -15,11 +15,11 @@ app.use('/client',express.static(__dirname + '/client'))
 app.get('/',(req,res) => {
     res.sendFile(__dirname + '/client/index.html')
 })
-app.get('/test',(req,res) => {
-    res.sendFile(__dirname + '/client/test.html')
+app.get('/PVP',(req,res) => {
+    res.sendFile(__dirname + '/client/PVP.html')
 })
-app.get('/game',(req,res) => {
-    res.sendFile(__dirname + '/client/game.html')
+app.get('/PVE',(req,res) => {
+    res.sendFile(__dirname + '/client/PVE.html')
 })
 
 
@@ -35,7 +35,8 @@ let USERS = {
 	"bob":"asd",
 	"bob2":"bob",
     "bob3":"ttt",
-    "max":"max",	
+	"max":"max",
+	"a":"a",
 }
 
 //simulate async

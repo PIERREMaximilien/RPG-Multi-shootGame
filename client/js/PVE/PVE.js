@@ -1,9 +1,9 @@
-const c = document.querySelector('canvas').getContext('2d')
+const canvas = document.querySelector('canvas')
+const c = canvas.getContext('2d')
 
-const WIDTH = 750
-const HEIGHT = 750
+const WIDTH = 700
+const HEIGHT = 700
 c.font = '30px Arial'
-c.mozImageSmoothingEnabled = false
 c.msImageSmoothingEnabled = false
 c.imageSmoothingEnabled = false
 
@@ -14,25 +14,25 @@ const Img = {}
 Img.set = function() {
     Img.player = {}
     Img.player.gun = new Image()
-    Img.player.gun.src = "public/img/player/gun.png"
+    Img.player.gun.src = "client/img/player/gun.png"
     Img.player.rifle = new Image()
-    Img.player.rifle.src = "public/img/player/rifle.png"
+    Img.player.rifle.src = "client/img/player/rifle.png"
     Img.player.shootgun = new Image()
-    Img.player.shootgun.src = "public/img/player/shootgun.png"
+    Img.player.shootgun.src = "client/img/player/shootgun.png"
     Img.enemy = new Image()
-    Img.enemy.src = 'public/img/enemy.png'
+    Img.enemy.src = 'client/img/enemy.png'
     Img.bullet = new Image()
-    Img.bullet.src = 'public/img/bullet.png'
+    Img.bullet.src = 'client/img/bullet.png'
     Img.desertEagle = new Image()
-    Img.desertEagle.src = 'public/img/weapon/desertEagle.png'
+    Img.desertEagle.src = 'client/img/weapon/desertEagle.png'
     Img.shootgun = new Image()
-    Img.shootgun.src = 'public/img/weapon/shootgun.png'
+    Img.shootgun.src = 'client/img/weapon/shootgun.png'
     Img.ak47 = new Image()
-    Img.ak47.src = 'public/img/weapon/ak47.png'
+    Img.ak47.src = 'client/img/weapon/ak47.png'
     Img.machinegun = new Image()
-    Img.machinegun.src = 'public/img/weapon/machinegun.png'
+    Img.machinegun.src = 'client/img/weapon/machinegun.png'
     Img.usi = new Image()
-    Img.usi.src = 'public/img/weapon/usi.png'
+    Img.usi.src = 'client/img/weapon/usi.png'
 }
 Img.set()
 
@@ -44,20 +44,22 @@ function testCollisionRectRect(rect1,rect2) {
 }
 
 class Weapon {
-    constructor(atkspeed,damage,special,range) {
+    constructor(id,atkspeed,damage,special,range,munitions) {
+        this.id = id
         this.atkspeed = atkspeed
         this.damage = damage
         this.special = special
         this.range = range
+        this.munitions = munitions
     }
 }
 
-const gun = new Weapon(1,25,0,25)
-const desertEagle = new Weapon(1,50,0,25)
-const shootgun = new Weapon(0.5,15,1,25)
-const usi = new Weapon(4,20,0,35)
-const ak47 = new Weapon(3,30,0,35)
-const machinegun = new Weapon(6,15,2,40)
+const gun = new Weapon("gun",1,25,0,35,50)
+const desertEagle = new Weapon("desertEagle",1,50,0,35,50)
+const shootgun = new Weapon("shootgun",0.5,20,1,25,250)
+const usi = new Weapon("usi",4,15,0,35,100)
+const ak47 = new Weapon("ak47",3,30,0,35,100)
+const machinegun = new Weapon("machinegun",6,15,2,15,250)
 
 class Player {
     constructor(x, y, width, height, speed, hp, hpMax, img, weapon) {
@@ -91,7 +93,7 @@ class Player {
         y -= this.height/2
          
         c.translate(WIDTH/2,HEIGHT/2)
-        c.rotate((this.aimAngle/* -20*/)*Math.PI/180)
+        c.rotate((this.aimAngle)*Math.PI/180)
         c.translate(-WIDTH/2,-HEIGHT/2)  
 
 		c.drawImage(this.img,
@@ -185,9 +187,9 @@ class Player {
                     Bullet.generate(playerOne.aimAngle - 10)
                 } else if(this.weapon.special === 2) {
                     if(Math.random()< 0.5)
-                        Bullet.generate(playerOne.aimAngle + Math.floor(Math.random()*20))
+                        Bullet.generate(playerOne.aimAngle + Math.floor(Math.random()*15))
                     else
-                        Bullet.generate(playerOne.aimAngle + Math.floor(Math.random()*(-20)))
+                        Bullet.generate(playerOne.aimAngle + Math.floor(Math.random()*(-15)))
                 }
                 playerOne.atkCounter = 0
             }
@@ -299,11 +301,11 @@ class Enemy {
     }
 
     generateLoot() {
-        this.loot(desertEagle,Img.desertEagle,0.05,Img.player.gun)
-        this.loot(shootgun,Img.shootgun,0.035,Img.player.shootgun)
-        this.loot(ak47,Img.ak47,0.025,Img.player.rifle)
-        this.loot(usi,Img.usi,0.04,Img.player.shootgun)
-        this.loot(machinegun,Img.machinegun,0.01,Img.player.rifle)
+        this.loot(desertEagle,Img.desertEagle,0.025,Img.player.gun)
+        this.loot(shootgun,Img.shootgun,0.02,Img.player.shootgun)
+        this.loot(ak47,Img.ak47,0.015,Img.player.rifle)
+        this.loot(usi,Img.usi,0.02,Img.player.shootgun)
+        this.loot(machinegun,Img.machinegun,0.001,Img.player.rifle)
     }
 }
 
@@ -392,11 +394,21 @@ Bullet.generate = function(aimOverwrite) {
 
     const id = Math.random()
     
-    const bullet = new Bullet(id, playerOne.x, playerOne.y, 10, 10, velocity, playerOne.weapon.damage, Img.bullet)
-    Bullet.list[id] = bullet
+    for(let i = 0; i < playerInventory.items.length; i++) {
+        if(playerInventory.items[i].id === playerOne.weapon.id) {
+            if ( 0 < playerInventory.items[i].amount) {
+                playerInventory.items[i].amount -= 1 
+                const bullet = new Bullet(id, playerOne.x, playerOne.y, 10, 10, velocity, playerOne.weapon.damage, Img.bullet)
+                Bullet.list[id] = bullet
+                playerInventory.refreshRender()
+            }
+        }
+    }
+
 }
 
 const playerOne = new Player(WIDTH/2, HEIGHT/2, 85, 50, 3, 100, 100, Img.player.gun, gun)
+
 
 class Maps {
     constructor(id,imgSrc,width,height){
@@ -447,7 +459,7 @@ class Bonus {
 
 Bonus.list = {}
 
-currentMap = new Maps('field','public/img/map.png',1204,1204)
+const currentMap = new Maps('field','client/img/map.png',1204,1204)
 
 let score = 0
 
@@ -497,8 +509,8 @@ function animate() {
 	for(let key in Bonus.list){
         Bonus.list[key].draw()
         if(playerOne.testCollision(Bonus.list[key])) {
-            playerOne.weapon = Bonus.list[key].category
-            playerOne.img = Bonus.list[key].playerImg
+            const weaponM = Bonus.list[key].category
+            playerInventory.addItem(weaponM.id,weaponM.munitions)
             delete Bonus.list[key]
         }
     }
@@ -511,10 +523,6 @@ function animate() {
     if(time % 1000 === 0)
         Enemy.randomlyGenerate(150,176,0.5,500,500,10,Img.enemy,100)
     requestAnimationFrame(animate)
-}
- 
-function newGame() {
-    console.log('game is on try to survive!')
 }
 
 addEventListener('keydown', (event) => {
@@ -539,7 +547,7 @@ addEventListener('keyup', (event) => {
         playerOne.downPressed = false;
 })
 
-addEventListener('mousemove', (event) => {
+canvas.addEventListener('mousemove', (event) => {
     let mouseX = event.clientX - document.querySelector('canvas').getBoundingClientRect().left
 	let mouseY = event.clientY - document.querySelector('canvas').getBoundingClientRect().top
 	
@@ -549,17 +557,15 @@ addEventListener('mousemove', (event) => {
     playerOne.aimAngle = Math.atan2(mouseY,mouseX) / Math.PI * 180
 })
 
-addEventListener('mousedown', (event) => {
+canvas.addEventListener('mousedown', (event) => {
     if(event.button === 0)
         playerOne.mouseLeft = true
 })
 
-addEventListener('mouseup', (event) => {
+canvas.addEventListener('mouseup', (event) => {
     if(event.button === 0)
         playerOne.mouseLeft = false
 })
-
-newGame()
 
 animate()
 
