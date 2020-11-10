@@ -235,7 +235,7 @@ setInterval(() => {
         Player.list[i].draw()
     for(let i in Bullet.list)
         Bullet.list[i].draw()
-},40)
+},17)
 
 addEventListener('keydown', (event) => {
     if(event.key === 'd')

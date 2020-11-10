@@ -14,7 +14,7 @@ class Player extends Entity {
         this.pressingDown = false
         this.pressingAttack = false
         this.mouseAngle = 0
-        this.maxSpd = 6
+        this.maxSpd = 4
         this.hp = 100
         this.hpMax = 100
         this.score = 0
@@ -32,7 +32,7 @@ class Player extends Entity {
     }
 
     shootBullet = (angle) => {
-        if(this.atkCounter > 10) {
+        if(this.atkCounter > 15) {
             let bullet = new Bullet(angle,this.id,10)
             bullet.x = this.x;
             bullet.y = this.y;
@@ -150,15 +150,15 @@ class Bullet extends Entity {
         this.width = 10
         this.height = 10
         this.id = Math.random()
-        this.spdX = Math.cos(angle/180*Math.PI) * 20;
-        this.spdY = Math.sin(angle/180*Math.PI) * 20;
+        this.spdX = Math.cos(angle/180*Math.PI) * 10;
+        this.spdY = Math.sin(angle/180*Math.PI) * 10;
         this.dmg = dmg
         this.timer = 0
         this.parent = parent
         this.toRemove = false
     }
     update() {
-		if(this.timer++ > 20)
+		if(this.timer++ > 45)
 			this.toRemove = true;
 		super.update();
 		

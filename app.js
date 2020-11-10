@@ -125,4 +125,4 @@ setInterval(() => {
 	initPack.bullet = [];
 	removePack.player = [];
 	removePack.bullet = [];
-}, 40);
+}, 17);
