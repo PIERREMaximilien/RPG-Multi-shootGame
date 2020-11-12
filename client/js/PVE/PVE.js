@@ -1,10 +1,14 @@
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
 
+<<<<<<< HEAD:public/js/index.js
 const WIDTH = 700
 const HEIGHT = 700
+=======
+const WIDTH = 1155
+const HEIGHT = 650
+>>>>>>> development:client/js/PVE/PVE.js
 c.font = '30px Arial'
-c.mozImageSmoothingEnabled = false
 c.msImageSmoothingEnabled = false
 c.imageSmoothingEnabled = false
 
@@ -15,25 +19,25 @@ const Img = {}
 Img.set = function() {
     Img.player = {}
     Img.player.gun = new Image()
-    Img.player.gun.src = "public/img/player/gun.png"
+    Img.player.gun.src = "client/img/player/gun.png"
     Img.player.rifle = new Image()
-    Img.player.rifle.src = "public/img/player/rifle.png"
+    Img.player.rifle.src = "client/img/player/rifle.png"
     Img.player.shootgun = new Image()
-    Img.player.shootgun.src = "public/img/player/shootgun.png"
+    Img.player.shootgun.src = "client/img/player/shootgun.png"
     Img.enemy = new Image()
-    Img.enemy.src = 'public/img/enemy.png'
+    Img.enemy.src = 'client/img/enemy.png'
     Img.bullet = new Image()
-    Img.bullet.src = 'public/img/bullet.png'
+    Img.bullet.src = 'client/img/bullet.png'
     Img.desertEagle = new Image()
-    Img.desertEagle.src = 'public/img/weapon/desertEagle.png'
+    Img.desertEagle.src = 'client/img/weapon/desertEagle.png'
     Img.shootgun = new Image()
-    Img.shootgun.src = 'public/img/weapon/shootgun.png'
+    Img.shootgun.src = 'client/img/weapon/shootgun.png'
     Img.ak47 = new Image()
-    Img.ak47.src = 'public/img/weapon/ak47.png'
+    Img.ak47.src = 'client/img/weapon/ak47.png'
     Img.machinegun = new Image()
-    Img.machinegun.src = 'public/img/weapon/machinegun.png'
+    Img.machinegun.src = 'client/img/weapon/machinegun.png'
     Img.usi = new Image()
-    Img.usi.src = 'public/img/weapon/usi.png'
+    Img.usi.src = 'client/img/weapon/usi.png'
 }
 Img.set()
 
@@ -410,6 +414,7 @@ Bullet.generate = function(aimOverwrite) {
 
 const playerOne = new Player(WIDTH/2, HEIGHT/2, 85, 50, 3, 100, 100, Img.player.gun, gun)
 
+
 class Maps {
     constructor(id,imgSrc,width,height){
 		this.id = id,
@@ -459,7 +464,7 @@ class Bonus {
 
 Bonus.list = {}
 
-currentMap = new Maps('field','public/img/map.png',1204,1204)
+const currentMap = new Maps('field','client/img/map.png',1204,1204)
 
 let score = 0
 
@@ -524,10 +529,13 @@ function animate() {
         Enemy.randomlyGenerate(150,176,0.5,500,500,10,Img.enemy,100)
     requestAnimationFrame(animate)
 }
+<<<<<<< HEAD:public/js/index.js
  
 newGame = function() {
     console.log('game is on try to survive!')
 }
+=======
+>>>>>>> development:client/js/PVE/PVE.js
 
 addEventListener('keydown', (event) => {
     if(event.key === 'd')
@@ -571,11 +579,9 @@ canvas.addEventListener('mouseup', (event) => {
         playerOne.mouseLeft = false
 })
 
-newGame()
-
 animate()
 
 setInterval(() => {
     if(playerOne.hp <= 0)
-        location.href = 'index.html'
+        location.href = '/'
 }, 50);

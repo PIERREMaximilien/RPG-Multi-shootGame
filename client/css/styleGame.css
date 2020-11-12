@@ -1,0 +1,17 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: gray;
+}
+canvas {
+    margin-left: 12%;
+}
+#inventory {
+    margin-left: 12%;
+}
+#chat-text {
+    margin-left: 12%;
+}
+#chat-form {
+    margin-left: 12%;
+}
