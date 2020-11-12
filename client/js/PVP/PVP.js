@@ -200,14 +200,15 @@ socket.on('remove',(data) => {
 })
 
 class Maps {
-    constructor(id,imgSrc,width,height){
+    constructor(id,imgSrc,width,height,grid){
 		this.id = id,
-		this.image = new Image(),
-		this.width = width,
+		this.image = new Image()
+		this.width = width
         this.height	= height
         this.image.src = imgSrc
+        this.grid = grid
 	}
-	
+
 	draw() {
         ctx.save()
 		let x = WIDTH/2 - Player.list[selfId].x
@@ -216,7 +217,7 @@ class Maps {
         ctx.restore()
 	}
 }
-const currentMap = new Maps('field','client/img/map.png',1204,1204)
+Maps.current = new Maps('field','client/img/newmap.png',1200,1200)
 
 let drawScore = function(){
     ctx.save()
@@ -229,7 +230,7 @@ setInterval(() => {
     if(!selfId)
         return
     ctx.clearRect(0,0,WIDTH,HEIGHT)
-    currentMap.draw()
+    Maps.current.draw()
     drawScore()
     for(let i in Player.list)
         Player.list[i].draw()
