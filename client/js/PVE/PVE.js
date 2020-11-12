@@ -524,13 +524,6 @@ function animate() {
         Enemy.randomlyGenerate(150,176,0.5,500,500,10,Img.enemy,100)
     requestAnimationFrame(animate)
 }
-<<<<<<< HEAD:public/js/index.js
- 
-newGame = function() {
-    console.log('game is on try to survive!')
-}
-=======
->>>>>>> development:client/js/PVE/PVE.js
 
 addEventListener('keydown', (event) => {
     if(event.key === 'd')
