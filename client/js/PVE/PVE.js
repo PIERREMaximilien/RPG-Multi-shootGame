@@ -1,13 +1,8 @@
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
 
-<<<<<<< HEAD:public/js/index.js
-const WIDTH = 700
-const HEIGHT = 700
-=======
 const WIDTH = 1155
 const HEIGHT = 650
->>>>>>> development:client/js/PVE/PVE.js
 c.font = '30px Arial'
 c.msImageSmoothingEnabled = false
 c.imageSmoothingEnabled = false
